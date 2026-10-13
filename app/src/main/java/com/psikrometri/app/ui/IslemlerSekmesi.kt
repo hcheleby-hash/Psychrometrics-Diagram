@@ -28,9 +28,10 @@ fun IslemlerSekmesi(vm: AnaVM) {
     val duzenlenen = secIndex?.let { vm.proje.islemler.getOrNull(it) }
     var tur by remember(duzenlenen) { mutableStateOf(duzenlenen?.tur ?: IslemTuru.KARISIM) }
     val noktaAdlari = vm.hesap.hava.keys.toList()
-    var girdiler by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.girdiler ?: List(tur.girdiSayisi) { noktaAdlari.getOrElse(it) { "" } }) }
+    val ayniTur = duzenlenen != null && tur == duzenlenen.tur
+    var girdiler by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.takeIf { ayniTur }?.girdiler ?: List(tur.girdiSayisi) { noktaAdlari.getOrElse(it) { "" } }) }
     val varsayilan = mapOf(Parametre.KW to "5", Parametre.SHF to "75", Parametre.KGH to "5", Parametre.BF to "10", Parametre.BUHAR to "1", Parametre.ARA to "1")
-    var param by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.param?.map { it.kisa() } ?: tur.parametreler.map { varsayilan.getValue(it) }) }
+    var param by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.takeIf { ayniTur }?.param?.map { it.kisa() } ?: tur.parametreler.map { varsayilan.getValue(it) }) }
     var renk by remember(duzenlenen) { mutableStateOf(duzenlenen?.renk ?: RENKLER[0]) }
 
     fun islem(): Islem? {
@@ -39,12 +40,12 @@ fun IslemlerSekmesi(vm: AnaVM) {
         // çıktı adları mevcut nokta adlarıyla çakışmasın
         val kullanilan = vm.proje.noktalar.map { it.ad }.toSet()
         var n = vm.proje.yeniPPAdi().removePrefix("PP").toInt()
-        val cikti = duzenlenen?.ciktilar ?: List(tur.ciktiSayisi) { while ("PP$n" in kullanilan) n++; "PP${n++}" }
+        val cikti = duzenlenen?.takeIf { ayniTur }?.ciktilar ?: List(tur.ciktiSayisi) { while ("PP$n" in kullanilan) n++; "PP${n++}" }
         return Islem(tur, girdiler, cikti, p, renk)
     }
     val onizleme = islem()?.let { i -> runCatching { islemHesapla(i.tur, i.girdiler.map { vm.hesap.hava.getValue(it) }, i.param) } }
 
-    Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         SecimKutusu(IslemTuru.entries, tur, { it.etiket }, { tur = it }, Modifier.fillMaxWidth(), "İşlem")
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             girdiler.forEachIndexed { i, g ->
@@ -61,9 +62,9 @@ fun IslemlerSekmesi(vm: AnaVM) {
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            RENKLER.forEach { r -> Box(Modifier.size(28.dp).clip(CircleShape).background(Color(r)).border(if (r == renk) 3.dp else 0.dp, Color.Black, CircleShape).clickable { renk = r }) }
+            RENKLER.forEach { r -> Box(Modifier.size(28.dp).clip(CircleShape).background(Color(r)).border(if (r == renk) 3.dp else 0.dp, MaterialTheme.colorScheme.onSurface, CircleShape).clickable { renk = r }) }
         }
-        onizleme?.let { o -> Text(o.fold({ it.kapasite.metin() }, { it.message ?: "" }), color = if (o.isFailure) MaterialTheme.colorScheme.error else Color.Unspecified) }
+        onizleme?.takeIf { o -> o.isFailure || o.getOrNull()?.kapasite?.metin()?.isNotEmpty() == true }?.let { o -> Text(o.fold({ it.kapasite.metin() }, { it.message ?: "" }), color = if (o.isFailure) MaterialTheme.colorScheme.error else Color.Unspecified) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button({ islem()?.let { vm.proje = vm.proje.copy(islemler = vm.proje.islemler + it) } }, enabled = duzenlenen == null && islem() != null) { Text("Ekle") }
             Button({ islem()?.let { yeni -> vm.proje = vm.proje.copy(islemler = vm.proje.islemler.mapIndexed { k, i -> if (k == secIndex) yeni else i }) } }, enabled = duzenlenen != null && islem() != null) { Text("Güncelle") }

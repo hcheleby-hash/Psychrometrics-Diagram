@@ -23,7 +23,7 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     var v1 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: "") }
     var v2 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: "") }
     var debi by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(b.birim(Buyukluk.DEBI).goster(duzenlenen?.debi ?: 150.0).yaz(1)) }
-    LaunchedEffect(taslak) { taslak?.let { o1 = Ozellik.KURU; o2 = Ozellik.MUTLAK; v1 = b.ozellikBirimi(Ozellik.KURU).goster(it.t).yaz(1); v2 = b.ozellikBirimi(Ozellik.MUTLAK).goster(it.Wr).yaz(4); taslakKullanildi() } }
+    LaunchedEffect(taslak) { taslak?.let { o1 = Ozellik.KURU; o2 = Ozellik.MUTLAK; v1 = b.ozellikBirimi(Ozellik.KURU).goster(it.t).yaz(1); v2 = b.ozellikBirimi(Ozellik.MUTLAK).goster(it.Wr).yaz(5); taslakKullanildi() } }
 
     val si1 = v1.sayi()?.let { b.ozellikBirimi(o1).siye(it) }; val si2 = v2.sayi()?.let { b.ozellikBirimi(o2).siye(it) }
     val debiSi = debi.sayi()?.let { b.birim(Buyukluk.DEBI).siye(it) }
@@ -35,7 +35,7 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     val gecerli = sonuc?.isSuccess == true && debiSi != null && debiSi > 0 && ad.isNotBlank() && !adCakisma
     fun nokta() = Nokta(ad.trim(), o1, si1!!, o2, si2!!, debiSi!!, duzenlenen?.renk ?: com.psikrometri.app.model.MAVI)
 
-    Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         OutlinedTextField(ad, { ad = it }, label = { Text("Nokta adı") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         for ((o, setO, v, setV) in listOf(Quad(o1, { x: Ozellik -> o1 = x }, v1, { x: String -> v1 = x }), Quad(o2, { x: Ozellik -> o2 = x }, v2, { x: String -> v2 = x })))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
