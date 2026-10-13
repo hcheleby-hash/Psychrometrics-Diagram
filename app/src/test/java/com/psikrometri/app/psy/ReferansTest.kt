@@ -33,4 +33,69 @@ class ReferansTest {
             }
         }
     }
+    private val parametreSirasi: Map<Int, (List<Double>) -> List<Double>> = mapOf(
+        4 to { p -> listOf(p[0], p.getOrElse(1) { 1.0 }) },        // buhar, ara
+        5 to { p -> listOf(p[0], p[1], p.getOrElse(2) { 1.0 }) },  // kW, SHF, ara
+        9 to { p -> listOf(p[1], p.getOrElse(2) { 1.0 }) },        // (0), SHF, ara -> SHF, ara
+    )
+
+    /** ppp sırasıyla tüm işlemleri koşturur; Daikin'in hata verdiği işlemler atlanır. */
+    fun calistir(sn: JSONObject, atlaKodlar: Set<Int> = emptySet()): Pair<Map<String, Hava>, Map<String, IslemSonucu>> {
+        val p = sn.getDouble("basinc")
+        val hava = LinkedHashMap<String, Hava>(); val sonuc = HashMap<String, IslemSonucu>()
+        val nk = sn.getJSONArray("noktalar")
+        for (j in 0 until nk.length()) { val n = nk.getJSONObject(j)
+            hava[n.getString("ad")] = Hava(coz(Ozellik.entries[n.getInt("o1")], n.getDouble("v1"), Ozellik.entries[n.getInt("o2")], n.getDouble("v2"), p), n.getDouble("debi")) }
+        val isl = sn.getJSONArray("islemler")
+        for (j in 0 until isl.length()) {
+            val o = isl.getJSONObject(j); val kod = o.getInt("kod")
+            if (kod in atlaKodlar) continue
+            val tur = IslemTuru.entries.first { it.daikinKod == kod }
+            val girdi = (0 until o.getJSONArray("girdi").length()).map { hava[o.getJSONArray("girdi").getString(it)] ?: return@map null }
+            if (girdi.any { it == null }) continue
+            val ham = (0 until o.getJSONArray("param").length()).map { o.getJSONArray("param").getDouble(it) }
+            val param = parametreSirasi[kod]?.invoke(ham) ?: ham
+            val r = try { islemHesapla(tur, girdi.map { it!! }, param) } catch (e: CozumHatasi) { continue }
+            val cikti = (0 until o.getJSONArray("cikti").length()).map { o.getJSONArray("cikti").getString(it) }
+            cikti.forEachIndexed { k, ad -> hava[ad] = r.ciktilar[k] }
+            sonuc[cikti.firstOrNull() ?: "$kod:" + girdi.indices.joinToString(":") { o.getJSONArray("girdi").getString(it) }] = r
+        }
+        return hava to sonuc
+    }
+
+    private fun kapasiteKarsilastir(etiket: String, b: JSONObject, k: Kapasite) {
+        val es = mapOf("Total" to k.toplam, "Sensible" to k.duyulur, "Latent" to k.gizli, "Heating" to k.isitici,
+            "Dehumidification" to k.nemKgH, "Steam humidification" to k.nemKgH, "Water humidification" to k.nemKgH,
+            "Discharge" to k.cikisT, "Bypass factor" to k.bypass, "SHF" to k.shf)
+        for (key in b.keys()) {
+            val g = es[key] ?: error("$etiket: $key hesaplanmadı")
+            val tol = if (key == "Discharge" || key == "Bypass factor" || key == "SHF") 0.05 else 0.005
+            assertEquals("$etiket.$key", b.getDouble(key), g, tol + 1e-9)
+        }
+    }
+
+    @Test fun islemSenaryolari() {
+        val s = Referans.yukle().getJSONArray("senaryolar")
+        for (i in 0 until s.length()) {
+            val sn = s.getJSONObject(i)
+            if (sn.getString("ad") == "ref_durum" || sn.getString("ad") == "ref_shf") continue
+            val atla = setOf(12, 14)  // Task 6'da emptySet() olur
+            val (hava, sonuc) = calistir(sn, atla)
+            val isl = sn.getJSONArray("islemler")
+            val atlanan = (0 until isl.length()).map { isl.getJSONObject(it) }.filter { it.getInt("kod") in atla }
+                .flatMap { o -> (0 until o.getJSONArray("cikti").length()).map { o.getJSONArray("cikti").getString(it) } }.toSet()
+            val bek = sn.getJSONObject("beklenen_noktalar")
+            for (ad in bek.keys()) {
+                if (ad in atlanan) continue
+                val h = hava[ad] ?: throw AssertionError("${sn.getString("ad")}.$ad: Daikin hesapladı, biz hesaplayamadık")
+                Referans.noktaKarsilastir("${sn.getString("ad")}.$ad", bek.getJSONObject(ad), h.d)
+            }
+            val bi = sn.getJSONObject("beklenen_islemler")
+            for (ad in bi.keys()) {
+                if (ad in atlanan) continue
+                val r = sonuc[ad] ?: throw AssertionError("${sn.getString("ad")}.$ad: işlem sonucu yok")
+                kapasiteKarsilastir("${sn.getString("ad")}.$ad", bi.getJSONObject(ad), r.kapasite)
+            }
+        }
+    }
 }
