@@ -1,0 +1,41 @@
+X. Psychrometric points
+P1 | P2 | P3 | P4 | 
+Dry bulb temperature | 27,0°C | Dry bulb temperature | 5,0°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 12,0°C | 
+Wet bulb temperature | 18,6°C | Wet bulb temperature | 1,8°C | Wet bulb temperature | 13,4°C | Wet bulb temperature | 12,0°C | 
+Dew point | 14,1°C | Dew point | -2,7°C | Dew point | 6,5°C | Dew point | 12,0°C | 
+Relative humidity | 44,9% | Relative humidity | 55,7% | Relative humidity | 36,6% | Relative humidity | 100,0% | 
+Absolute humidity | 0,0100kg/kg | Absolute humidity | 0,0030kg/kg | Absolute humidity | 0,0060kg/kg | Absolute humidity | 0,0087kg/kg | 
+Enthalpy | 52,7kJ/kg | Enthalpy | 12,6kJ/kg | Enthalpy | 37,4kJ/kg | Enthalpy | 34,1kJ/kg | 
+Density | 1,169kg/m³ | Density | 1,267kg/m³ | Density | 1,192kg/m³ | Density | 1,231kg/m³ | 
+Specific volume | 0,864m³/kg | Specific volume | 0,792m³/kg | Specific volume | 0,844m³/kg | Specific volume | 0,819m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+P5 | PP1 | PP2 | PP3 | 
+Dry bulb temperature | 8,0°C | Dry bulb temperature | 18,9°C | Dry bulb temperature | 27,0°C | Dry bulb temperature | 18,9°C | 
+Wet bulb temperature | 8,0°C | Wet bulb temperature | 14,8°C | Wet bulb temperature | 17,7°C | Wet bulb temperature | 14,8°C | 
+Dew point | 8,0°C | Dew point | 12,3°C | Dew point | 12,3°C | Dew point | 12,3°C | 
+Relative humidity | 100,0% | Relative humidity | 65,3% | Relative humidity | 39,9% | Relative humidity | 65,3% | 
+Absolute humidity | 0,0067kg/kg | Absolute humidity | 0,0089kg/kg | Absolute humidity | 0,0089kg/kg | Absolute humidity | 0,0089kg/kg | 
+Enthalpy | 24,8kJ/kg | Enthalpy | 41,5kJ/kg | Enthalpy | 49,8kJ/kg | Enthalpy | 41,5kJ/kg | 
+Density | 1,250kg/m³ | Density | 1,202kg/m³ | Density | 1,170kg/m³ | Density | 1,202kg/m³ | 
+Specific volume | 0,805m³/kg | Specific volume | 0,839m³/kg | Specific volume | 0,862m³/kg | Specific volume | 0,839m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+PP4 | PP5 | PP6 | PP7 | 
+Dry bulb temperature | 10,0°C | Dry bulb temperature | 23,2°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 29,5°C | 
+Wet bulb temperature | 10,0°C | Wet bulb temperature | 18,6°C | Wet bulb temperature | 10,3°C | Wet bulb temperature | 13,4°C | 
+Dew point | 10,0°C | Dew point | 16,3°C | Dew point | -2,7°C | Dew point | -2,7°C | 
+Relative humidity | 100,0% | Relative humidity | 65,0% | Relative humidity | 18,4% | Relative humidity | 11,8% | 
+Absolute humidity | 0,0076kg/kg | Absolute humidity | 0,0115kg/kg | Absolute humidity | 0,0030kg/kg | Absolute humidity | 0,0030kg/kg | 
+Enthalpy | 29,3kJ/kg | Enthalpy | 52,7kJ/kg | Enthalpy | 29,8kJ/kg | Enthalpy | 37,4kJ/kg | 
+Density | 1,241kg/m³ | Density | 1,183kg/m³ | Density | 1,194kg/m³ | Density | 1,164kg/m³ | 
+Specific volume | 0,812m³/kg | Specific volume | 0,855m³/kg | Specific volume | 0,840m³/kg | Specific volume | 0,862m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+X. Actions
+Cooling capacity: P1, PP1, PP2 (Capacities: Total = 2,00kW, Sensible = 1,50kW (75%), Latent = 0,50kW) | 
+Bypass factor: P1, PP3, PP4 (Capacities: Total = 2,00kW, Sensible = 1,50kW (75%), Latent = 0,50kW, Discharge = 18,9°C, Bypass factor = 52,1%) | 
+Water humidification: P1, PP5 (Capacities: Latent = 0,69kW, Water humidification = 1,00kg/h) | 
+Condensate: P4, P5 (Capacities: Total = 1,67kW, Sensible = 0,73kW (44%), Latent = 0,94kW, Dehumidification = 1,34kg/h) | 
+Heating: P2, P3, PP6 (Capacities: Total = 4,47kW, Sensible = 3,11kW (70%), Latent = 1,36kW, Steam humidification = 1,94kg/h) | 
+Heating: P2, P3, PP7 (Capacities: Total = 4,47kW, Sensible = 3,11kW (4,49kW), Latent = 1,36kW, Water humidification = 1,94kg/h) |

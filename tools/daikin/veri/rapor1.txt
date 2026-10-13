@@ -1,0 +1,57 @@
+X. Psychrometric points
+P1 | P2 | P3 | PP1 | 
+Dry bulb temperature | 27,0°C | Dry bulb temperature | 15,0°C | Dry bulb temperature | 35,0°C | Dry bulb temperature | 10,3°C | 
+Wet bulb temperature | 18,6°C | Wet bulb temperature | 12,5°C | Wet bulb temperature | 24,5°C | Wet bulb temperature | 10,3°C | 
+Dew point | 14,1°C | Dew point | 10,7°C | Dew point | 20,3°C | Dew point | 10,3°C | 
+Relative humidity | 44,9% | Relative humidity | 75,4% | Relative humidity | 42,4% | Relative humidity | 100,0% | 
+Absolute humidity | 0,0100kg/kg | Absolute humidity | 0,0080kg/kg | Absolute humidity | 0,0150kg/kg | Absolute humidity | 0,0078kg/kg | 
+Enthalpy | 52,7kJ/kg | Enthalpy | 35,3kJ/kg | Enthalpy | 73,7kJ/kg | Enthalpy | 29,9kJ/kg | 
+Density | 1,169kg/m³ | Density | 1,219kg/m³ | Density | 1,135kg/m³ | Density | 1,240kg/m³ | 
+Specific volume | 0,864m³/kg | Specific volume | 0,827m³/kg | Specific volume | 0,894m³/kg | Specific volume | 0,813m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+PP2 | PP3 | PP4 | PP5 | 
+Dry bulb temperature | 27,0°C | Dry bulb temperature | 27,0°C | Dry bulb temperature | 46,5°C | Dry bulb temperature | 12,0°C | 
+Wet bulb temperature | 16,8°C | Wet bulb temperature | 17,0°C | Wet bulb temperature | 18,8°C | Wet bulb temperature | 11,2°C | 
+Dew point | 10,3°C | Dew point | 10,7°C | Dew point | -6,0°C | Dew point | 10,6°C | 
+Relative humidity | 35,0% | Relative humidity | 36,1% | Relative humidity | 3,6% | Relative humidity | 90,8% | 
+Absolute humidity | 0,0078kg/kg | Absolute humidity | 0,0080kg/kg | Absolute humidity | 0,0023kg/kg | Absolute humidity | 0,0079kg/kg | 
+Enthalpy | 47,0kJ/kg | Enthalpy | 47,6kJ/kg | Enthalpy | 52,7kJ/kg | Enthalpy | 32,0kJ/kg | 
+Density | 1,171kg/m³ | Density | 1,170kg/m³ | Density | 1,103kg/m³ | Density | 1,232kg/m³ | 
+Specific volume | 0,861m³/kg | Specific volume | 0,861m³/kg | Specific volume | 0,909m³/kg | Specific volume | 0,818m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+PP6 | PP7 | PP8 | PP9 | 
+Dry bulb temperature | 10,3°C | Dry bulb temperature | 27,0°C | Dry bulb temperature | 54,1°C | Dry bulb temperature | 20,9°C | 
+Wet bulb temperature | 10,3°C | Wet bulb temperature | 17,0°C | Wet bulb temperature | 26,3°C | Wet bulb temperature | 15,7°C | 
+Dew point | 10,3°C | Dew point | 10,7°C | Dew point | 14,1°C | Dew point | 12,5°C | 
+Relative humidity | 100,0% | Relative humidity | 36,1% | Relative humidity | 10,6% | Relative humidity | 58,4% | 
+Absolute humidity | 0,0078kg/kg | Absolute humidity | 0,0080kg/kg | Absolute humidity | 0,0100kg/kg | Absolute humidity | 0,0090kg/kg | 
+Enthalpy | 29,9kJ/kg | Enthalpy | 47,6kJ/kg | Enthalpy | 80,4kJ/kg | Enthalpy | 43,8kJ/kg | 
+Density | 1,240kg/m³ | Density | 1,170kg/m³ | Density | 1,072kg/m³ | Density | 1,194kg/m³ | 
+Specific volume | 0,813m³/kg | Specific volume | 0,861m³/kg | Specific volume | 0,942m³/kg | Specific volume | 0,845m³/kg | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | Pressure | 101325,0Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 300,0l/s | 
+PP10 | PP11 | | | | | 
+Dry bulb temperature | 10,0°C | Dry bulb temperature | 27,0°C | | | | | 
+Wet bulb temperature | 10,0°C | Wet bulb temperature | 24,1°C | | | | | 
+Dew point | 10,0°C | Dew point | 23,0°C | | | | | 
+Relative humidity | 100,0% | Relative humidity | 78,7% | | | | | 
+Absolute humidity | 0,0076kg/kg | Absolute humidity | 0,0177kg/kg | | | | | 
+Enthalpy | 29,3kJ/kg | Enthalpy | 72,4kJ/kg | | | | | 
+Density | 1,241kg/m³ | Density | 1,164kg/m³ | | | | | 
+Specific volume | 0,812m³/kg | Specific volume | 0,875m³/kg | | | | | 
+Pressure | 101325,0Pa | Pressure | 101325,0Pa | | | | | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | | | | | 
+X. Actions
+Connect: P1, P2 | 
+Cool to saturation: P1, PP1, PP2 (Capacities: Total = 4,10kW, Sensible = 3,08kW (75%), Latent = 1,03kW) | 
+Cooling: P1, P2, PP3 (Capacities: Total = 3,12kW, Sensible = 2,20kW (71%), Latent = 0,92kW) | 
+Dehumidification: P1, PP4 (Capacities: Latent = 3,47kW, Dehumidification = 5,00kg/h) | 
+Discharge: P1, PP5, PP6 (Capacities: Total = 3,69kW, Sensible = 2,77kW (75%), Latent = 0,92kW, Discharge = 12,0°C, Bypass factor = 10,0%) | 
+Heating: P1, P2, PP7 (Capacities: Total = 3,12kW, Sensible = 2,21kW (71%), Latent = 0,91kW, Steam humidification = 1,30kg/h) | 
+Heating capacity: P1, PP8 (Capacities: Heating = 5,00kW) | 
+Mix air: P1, P2, PP9 | 
+Sensible heat factor: P1, PP10 (, SHF=75%) | 
+Show point: P1 | 
+Steam humidification: P1, PP11 (Capacities: Latent = 3,54kW, Steam humidification = 5,00kg/h) |
