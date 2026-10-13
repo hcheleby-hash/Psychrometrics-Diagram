@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -23,31 +24,41 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
     val dosya = dosyaIslemleri(vm)  // Task 12
     val yatay = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     MaterialTheme {
-        Scaffold(topBar = {
-            if (!yatay) TopAppBar(title = { Text("Psikrometri") }, actions = {
-                AssistChip({ rakimAcik = true }, label = { Text("${vm.proje.rakim.yaz(0)} m · ${(vm.proje.basinc / 1000).yaz(2)} kPa") })
-                var menu by remember { mutableStateOf(false) }
-                IconButton({ menu = true }) { Icon(Icons.Default.MoreVert, "Menü") }
-                DropdownMenu(menu, { menu = false }) {
-                    DropdownMenuItem({ Text("Yeni") }, { vm.proje = com.psikrometri.app.model.Proje(); vm.secili = null; menu = false })
-                    DropdownMenuItem({ Text("Aç") }, { dosya.ac(); menu = false })
-                    DropdownMenuItem({ Text("Kaydet") }, { dosya.kaydet(); menu = false })
-                    DropdownMenuItem({ Text("Rapor (PDF)") }, { dosya.rapor(); menu = false })
-                    DropdownMenuItem({ Text("Ayarlar") }, { ayarAcik = true; menu = false })
+        val eylemler: @Composable RowScope.() -> Unit = {
+            AssistChip({ rakimAcik = true }, label = { Text("${vm.proje.rakim.yaz(0)} m · ${(vm.proje.basinc / 1000).yaz(2)} kPa") })
+            var menu by remember { mutableStateOf(false) }
+            IconButton({ menu = true }) { Icon(Icons.Default.MoreVert, "Menü") }
+            DropdownMenu(menu, { menu = false }) {
+                DropdownMenuItem({ Text("Yeni") }, { vm.proje = com.psikrometri.app.model.Proje(); vm.secili = null; vm.onizleme = null; menu = false })
+                DropdownMenuItem({ Text("Aç") }, { dosya.ac(); menu = false })
+                DropdownMenuItem({ Text("Kaydet") }, { dosya.kaydet(); menu = false })
+                DropdownMenuItem({ Text("Rapor (PDF)") }, { dosya.rapor(); menu = false })
+                DropdownMenuItem({ Text("Ayarlar") }, { ayarAcik = true; menu = false })
+            }
+        }
+        val sekmeler: @Composable ColumnScope.() -> Unit = {
+            TabRow(sekme) { listOf("Noktalar", "İşlemler", "Veri").forEachIndexed { i, s -> Tab(sekme == i, { sekme = i }, text = { Text(s) }) } }
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                when (sekme) {
+                    0 -> NoktalarSekmesi(vm, noktaTaslak) { noktaTaslak = null }
+                    1 -> IslemlerSekmesi(vm)
+                    else -> VeriSekmesi(vm)
                 }
-            })
+            }
+        }
+        Scaffold(topBar = {
+            if (!yatay) TopAppBar(title = { Text("Psikrometri") }, actions = eylemler)
         }) { ic ->
-            if (yatay) Diyagram(vm, Modifier.fillMaxSize().padding(ic)) { noktaTaslak = it; sekme = 0 }
+            if (yatay) Row(Modifier.padding(ic).fillMaxSize()) {
+                Diyagram(vm, Modifier.weight(0.55f).fillMaxHeight()) { noktaTaslak = it; sekme = 0 }
+                Column(Modifier.weight(0.45f).fillMaxHeight()) {
+                    Row(Modifier.fillMaxWidth(), Arrangement.End, Alignment.CenterVertically, content = eylemler)
+                    sekmeler()
+                }
+            }
             else Column(Modifier.padding(ic).fillMaxSize()) {
                 Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
-                TabRow(sekme) { listOf("Noktalar", "İşlemler", "Veri").forEachIndexed { i, s -> Tab(sekme == i, { sekme = i }, text = { Text(s) }) } }
-                Box(Modifier.weight(0.55f).fillMaxWidth()) {
-                    when (sekme) {
-                        0 -> NoktalarSekmesi(vm, noktaTaslak) { noktaTaslak = null }
-                        1 -> IslemlerSekmesi(vm)
-                        else -> VeriSekmesi(vm)
-                    }
-                }
+                Column(Modifier.weight(0.55f).fillMaxWidth(), content = sekmeler)
             }
         }
         if (rakimAcik) RakimDiyalog(vm) { rakimAcik = false }

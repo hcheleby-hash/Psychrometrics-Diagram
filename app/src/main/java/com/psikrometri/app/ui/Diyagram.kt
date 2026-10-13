@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
@@ -23,14 +25,16 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
     var kayma by remember { mutableStateOf(Offset.Zero) }
     var balon by remember { mutableStateOf<Pair<Offset, Durum>?>(null) }
     var boyut by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    fun eksen() = Eksen(vm.ayarlar.tMin, vm.ayarlar.tMax, vm.ayarlar.wMax, 8f, 8f, boyut.width - 90f, boyut.height - 44f)
+    fun eksen() = Eksen(vm.ayarlar.tMin, vm.ayarlar.tMax, vm.ayarlar.wMax, 24f, 8f, boyut.width - 106f, boyut.height - 44f)
     fun ekrandanVeriye(o: Offset) = (o - kayma) / olcek
+    val yog = LocalDensity.current.density
     Box(modifier) {
-        Canvas(Modifier.fillMaxSize()
+        Canvas(Modifier.fillMaxSize().clipToBounds()
             .onSizeChanged { boyut = androidx.compose.ui.geometry.Size(it.width.toFloat(), it.height.toFloat()) }
             .pointerInput(Unit) { detectTransformGestures { merkez, kay, zoom, _ ->
                 val yeni = (olcek * zoom).coerceIn(1f, 8f)
-                kayma = merkez - (merkez - kayma) * (yeni / olcek) + kay; olcek = yeni } }
+                val k = merkez - (merkez - kayma) * (yeni / olcek) + kay
+                kayma = Offset(k.x.coerceIn(boyut.width * (1 - yeni), 0f), k.y.coerceIn(boyut.height * (1 - yeni), 0f)); olcek = yeni } }
             .pointerInput(Unit) { detectTapGestures(
                 onDoubleTap = { olcek = 1f; kayma = Offset.Zero; balon = null },
                 onTap = { o -> balon = null
@@ -46,7 +50,7 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
             }
         }
         balon?.let { (o, d) ->
-            Card(Modifier.offset { IntOffset(o.x.toInt(), o.y.toInt()) }.widthIn(max = 220.dp)) {
+            Card(Modifier.offset { IntOffset(o.x.coerceIn(0f, (boyut.width - 220 * yog).coerceAtLeast(0f)).toInt(), o.y.coerceIn(0f, (boyut.height - 130 * yog).coerceAtLeast(0f)).toInt()) }.widthIn(max = 220.dp)) {
                 Column(Modifier.padding(8.dp)) {
                     Text("t ${d.t.yaz(1)} °C · W ${d.Wr.yaz(4)}"); Text("RH %${(d.rh * 100).yaz(1)} · h ${d.h.yaz(1)}")
                     TextButton({ noktaEkle(d); balon = null }) { Text("Nokta ekle") }

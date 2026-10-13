@@ -1,6 +1,6 @@
 package com.psikrometri.app.ui
 
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 
 fun String.sayi(): Double? = trim().replace(',', '.').toDoubleOrNull()
-fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(this).replace('.', ',')
+fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(java.util.Locale.ROOT, this).replace('.', ',')
 /** Giriş alanına geri yazmak için: 75.0 -> "75", 0.0 -> "0", 0.0123 -> "0,0123". */
 fun Double.kisa(): String = if (this == Math.rint(this)) toLong().toString() else "%.4f".format(java.util.Locale.ROOT, this).trimEnd('0').replace('.', ',')
 
