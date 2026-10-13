@@ -12,7 +12,7 @@ data class Ayarlar(val birimler: BirimSecimi = BirimSecimi(), val tMin: Double =
 fun ayarlariOku(ctx: Context): Ayarlar {
     val sp = ctx.getSharedPreferences("ayarlar", Context.MODE_PRIVATE)
     return Ayarlar(
-        BirimSecimi(Buyukluk.entries.associateWith { sp.getInt("birim_${it.name}", 0) }),
+        BirimSecimi(Buyukluk.entries.associateWith { sp.getInt("birim_${it.name}", 0).coerceIn(0, it.secenekler.lastIndex) }),
         sp.getFloat("tMin", -40f).toDouble(), sp.getFloat("tMax", 65f).toDouble(), sp.getFloat("wMax", 0.055f).toDouble(),
         EgriTuru.entries.filter { sp.getBoolean("egri_${it.name}", true) }.toSet())
 }

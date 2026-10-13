@@ -21,7 +21,7 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
     var noktaTaslak by remember { mutableStateOf<Durum?>(null) }
     var rakimAcik by remember { mutableStateOf(false) }
     var ayarAcik by remember { mutableStateOf(false) }
-    val dosya = dosyaIslemleri(vm)  // Task 12
+    val dosya = dosyaIslemleri(vm)
     val yatay = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     MaterialTheme {
         val eylemler: @Composable RowScope.() -> Unit = {
@@ -77,6 +77,3 @@ private fun RakimDiyalog(vm: AnaVM, kapat: () -> Unit) {
         } })
 }
 
-@Composable fun AyarDiyalog(vm: AnaVM, kapat: () -> Unit) { kapat() }
-class DosyaIslemleri(val ac: () -> Unit, val kaydet: () -> Unit, val rapor: () -> Unit)
-@Composable fun dosyaIslemleri(vm: AnaVM) = DosyaIslemleri({}, {}, {})
