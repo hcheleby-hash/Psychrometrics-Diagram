@@ -34,8 +34,8 @@ class PsikroTest {
     }
 
     @Test fun doymusHavadaUcSicaklikEsit() {
-        val d = Durum(20.0, doymaW(20.0, P_DENIZ))
-        assertEquals(20.0, d.twb, 1e-3); assertEquals(20.0, d.td, 0.05)
+        val w = doymaW(20.0, P_DENIZ)  // formüller yuvarlanmamış W ile (Durum.twb/td Daikin gibi Wr kullanır)
+        assertEquals(20.0, yasTermometre(20.0, w, P_DENIZ), 1e-3); assertEquals(20.0, ciyNoktasi(w, P_DENIZ), 0.05)
     }
 
     @Test fun rakimBasincGidisDonus() {

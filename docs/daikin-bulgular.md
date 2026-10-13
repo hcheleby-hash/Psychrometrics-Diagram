@@ -47,7 +47,7 @@ Toplam = m·(h_a − h_b); duyulur = m·cpm(W_b)·(t_a − t_b); gizli = toplam 
 
 | İşlem | Davranış | Durum |
 |---|---|---|
-| Mix air | gerçek kütle (ρ·Q) ağırlıklı W ve h; debi = ΣQ | ✓ 20,9 °C / 0,0090 |
+| Mix air | kuru hava kütlesi (Q/v) ağırlıklı, yuvarlanmamış W ve h (exe 0x8449dc); td gösterimde Wr'den | ✓ (Görev 6) |
 | Cooling P1→P2 | PP = (t1, W2) ara nokta | ✓ |
 | Heating P1→P2 buhar | PP = (t2, W1): ısıt, sonra buhar | ✓ |
 | Heating P1→P2 su | PP = (W1, h = h2): entalpiye kadar ısıt, sonra adyabatik | ✓ 29,5 °C |
@@ -55,12 +55,12 @@ Toplam = m·(h_a − h_b); duyulur = m·cpm(W_b)·(t_a − t_b); gizli = toplam 
 | Steam humidification | t sabit, ΔW = (kg/h/3600)/m; gizli = kg/s·(2501+1,84·t1) | ✓ |
 | Water humidification | h sabit, ΔW = (kg/h/3600)/m; gizli = kg/s·2501 | ✓ 23,2 °C |
 | Dehumidification | h sabit, W azalır; gizli = kg/s·2501 | ✓ 46,5 °C |
-| Cooling capacity | duyulur = SHF·kW → Δt; gizli = (1−SHF)·kW → ΔW = gizli/(m·(2501+1,84·t1)); PP1 son, PP2 = (t1, W_son); doymayı aşarsa hata | ✓ 18,9 °C / 0,0089 |
-| Cool to saturation | ADP: doyma eğrisinde cpm(W_x)·(t1 − t_x)/(h1 − h_x) = SHF, t1'e en yakın kök; PP1 = ADP, PP2 = (t1, W_ADP); kök yoksa hata | ✓ 5 senaryo ≤ 0,04 °C |
-| Discharge | ADP (Cool to saturation ile aynı) ; PP1 = ADP + BF·(P1 − ADP) (t ve W); PP2 = ADP; toplam = duyulur/SHF | ✓ 12,0 °C |
+| Cooling capacity | ✓ exe 0x9b3b34: t2 = t1 − SHF·kW/(cpm(W1r)·1,2·Q), W2 = W1r − (1−SHF)·kW/(2500·Q·ρ_kuru(t1)), ρ_kuru = p/(R_da·(t1+273,15)), Q m³/s; W2 ≤ 0 ya da RH2 > 100 hata; PP2 = (t1, round5(W2)) | ✓ (Görev 6) |
+| Cool to saturation | ✓ exe 0x9b40a4: tx = td(W1r)'den 5 °C adımla aşağı; Wx = round5(Ws(tx)); T = 1,2·Q·\|hx − h1\|; oran = cpm(Wx)·1,2·Q·\|t1 − tx\|/T; oran < SHF ise geri dön ve adımı yarıla; \|SHF − oran\| ≤ 1e-4 (ya da adım < 1e-10) dur; tx ≤ −40 ya da Wx ≤ 0 hata. Kapasite: T (son hesaplanan), S = SHF·T, L = T − S | ✓ (Görev 6) |
+| Discharge | ✓ ADP ve T_ADP Cool to saturation'dan; T = T_ADP − BF·T_ADP; PP1 = T kW'lık Cooling capacity sonu, PP2 = ADP; S = SHF·T; Discharge = t(PP1) | ✓ (Görev 6) |
 | Condensate | iki nokta da RH=100 olmalı; kapasite + nem alma kg/h | kg/h'te ~%1 fark — referans testte çözülecek |
-| Sensible heat factor | P1'den SHF doğrusu doymaya (ya da W=0'a); **Cool to saturation'dan farklı doğru** (75 %: 10,0 °C vs 10,3 °C) | ✗ en iyi aday ~0,1 °C sapıyor (`tools/shf_uydur.py`) |
-| Bypass factor | son nokta Cooling capacity ile aynı; PP2 = SHF işlemindeki doyma kesişimi; BF = (t_son − t_ADP)/(t1 − t_ADP) | SHF doğrusuna bağlı |
+| Sensible heat factor | ✓ exe 0x9b4384: Cooling capacity doğrusu (Q = 0,1 m³/s sabit), kapasite 0'dan 1 kW adımla artar; RH > 100 ya da W ≤ 0 olunca adım geri alınır ve /10; adım < 1e-4'te biter. RH > 100 adımında nokta yazılır (gösterimde W doymaya kırpılır), W ≤ 0 adımında yazılmaz. Cool to saturation'dan farklı: o h-tabanlı oranla ADP arar | ✓ ref_shf 32/32 (Görev 6) |
+| Bypass factor | ✓ PP1 = Cooling capacity sonu; PP2 = exe 0x9b3d30: aynı doğruda gerçek Q ile kapasite kW'tan doymaya (RH düşerse ya da W ≤ 0 hata); BF = 100 − kW/T_doyma·100; Discharge = t(PP1) | ✓ (Görev 6) |
 | Connect / Show point | sadece çizim | ✓ |
 
 ## Daikin'i sürmek (`tools/daikin/dk.ps1`)
@@ -89,3 +89,14 @@ Kalan farklar (37 satır, çoğu 0,05 toleransın %0,1 ötesinde): `.superpowers
 - 4 Heating: hedef daha soğuksa uçlar yer değiştirir (test1.PP7); kW b'nin debisiyle, kg/h ilk noktanınkiyle.
 - Mix air: kuru hava kütlesi (Q/v) ağırlıklı.
 - Görev 6'ya ertelenen: 2 (td ≤ 0,005 °C), 5, 9, 12, 13, 14 (SHF doğrusu ailesi; ADP kökü SHF'ye bağlı ±0,01 °C). Discharge kapasitesi: T = m(1−BF)(h1−h_ADP), S = SHF·T.
+
+### Görev 6 — exe disassembly ile kesinleşen tanımlar
+
+Kaynak: `Desktop\psychrometrics.exe` (capstone ile; VA = dosya ofseti + 0x400C00). İşlem dağıtıcısı 0x9b61e3 (`jmp [kod*4 + 0x9b61f3]`). Python kopyası: `.superpowers/sdd/ex.py` — 7 senaryonun 1581 karşılaştırmasında 0 sapma.
+
+- **Gösterim/işlem kuralı (rapor 0x9b8ec0, panel 0x9b7f44):** nokta (t, RH) olarak saklanır; W = W(t, RH kırpılmış 0–100); Wr = round(W·1e5)/1e5. W, h, twb, td **Wr'den**; RH saklanan değer; v, ρ yuvarlanmamış W'den. İşlemler de çoğunlukla W1r kullanır. Bu, 1500 m'deki D.h (0,95) ve S2.h (28,1) sapmalarını ve karışım td'sini çözer. Görev 5'teki kod 7/8/10/11 yuvarlamaları bunun özel halleri.
+- **Yaş termometre (0x8446e4):** formül dalı **kuru termometreye** göre: t > 0 su (2501/−2,346/4,186), t ≤ 0 buz (2834,4/−0,26/2,1). tw < 0, t > 0 noktalarda (W=0 SHF uçları) eski tw-dalı 0,5 °C sapıyordu.
+- **Çiy noktası (0x844580):** W ≤ 0 ise W = 1e-6 (rapordaki −66,2 °C); Peppers dalı W < Ws(0 °C) ise buz formülü.
+- **Durum çözücüleri:** 0x843660 vb. 10'dan 5'e bölünen adımlı tarama, tolerans 1e-6/1e-4; ref_durum'da fark görülmedi.
+- **test4 artefaktı:** Daikin bir işlem hata verince (Cool to saturation 50/60 % kök yok) **hemen sonraki işlemin** çıktıları varsayılan nokta (25 °C, %50, 100 l/s) olur ve kapasitesi yazılmaz (S2, S3, S6). ReferansTest bunu taklit eder; uygulama taklit etmez.
+

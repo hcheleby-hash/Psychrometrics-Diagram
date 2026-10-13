@@ -1,5 +1,7 @@
 package com.psikrometri.app.psy
 
+import kotlin.math.abs
+
 data class Hava(val d: Durum, val debi: Double)
 data class Kapasite(val toplam: Double? = null, val duyulur: Double? = null, val gizli: Double? = null, val isitici: Double? = null,
                     val nemKgH: Double? = null, val cikisT: Double? = null, val bypass: Double? = null, val shf: Double? = null)
@@ -30,28 +32,39 @@ enum class IslemTuru(val daikinKod: Int, val etiket: String, val girdiSayisi: In
 
 fun kutle(debi: Double) = 1.2 * debi / 1000
 
-/** Daikin nem miktarlı işlemlerde W'yi 1e-5 kg/kg (0,01 g/kg) hassasiyetle taşır; tek m = 1,2·Q buna göre tutuyor. */
-private fun w5(W: Double) = Math.round(W * 1e5) / 1e5
-
 private fun sogutmaKapasitesi(m: Double, a: Durum, b: Durum) = Kapasite(
     toplam = m * (a.h - b.h), duyulur = m * cpm(b.W) * (a.t - b.t),
     gizli = m * (a.h - b.h) - m * cpm(b.W) * (a.t - b.t), shf = cpm(b.W) * (a.t - b.t) / (a.h - b.h) * 100)
 
-/** Doyma eğrisinde cpm(Wx)·(t1−tx)/(h1−hx) = SHF; t1'e en yakın kök. */
-fun adpKapasite(a: Durum, shf: Double): Durum {
-    val t = kokBul(a.t - 1e-6, -60.0, 0.05) { tx ->
-        val w = doymaW(tx, a.p); val dh = a.h - entalpi(tx, w)
-        if (dh <= 0) Double.NaN else cpm(w) * (a.t - tx) / dh - shf
-    } ?: throw CozumHatasi("İstenen SHF ile doğru %100 nem eğrisini kesmiyor. SHF'yi düşürün ya da SHF işlemini kullanın.")
-    return Durum(t, doymaW(t, a.p), a.p)
+/**
+ * Cool to saturation ADP'si (exe 0x9b40a4): td(W1r)'den 5 °C adımla aşağı, oran = cpm(Wx)·|t1−tx|/|hx−h1| (Wx = Ws(tx) yuvarlanmış);
+ * oran < SHF ise geri dön, adımı yarıla; |SHF−oran| <= 1e-4'te dur. Dönüş: ADP ve son hesaplanan T = m·|hx−h1|.
+ */
+fun doymaNoktasi(a: Durum, m: Double, shf: Double): Pair<Durum, Double> {
+    val h1 = a.h; var tx = ciyNoktasi(a.Wr, a.p)
+    var top = m * abs(entalpi(tx, a.Wr) - h1)
+    if (shf >= 1) return Durum(tx, doymaW(tx, a.p), a.p) to top
+    var adim = 5.0
+    while (true) {
+        tx -= adim; val wx = w5(doymaW(tx, a.p))
+        if (tx <= -40 || wx <= 0) throw CozumHatasi("İstenen SHF ile doğru %100 nem eğrisini kesmiyor. SHF'yi düşürün ya da SHF işlemini kullanın.")
+        top = m * abs(entalpi(tx, wx) - h1)
+        val oran = cpm(wx) * m * abs(a.t - tx) / top
+        if (oran < shf) { tx += adim; adim /= 2 }
+        if (abs(shf - oran) <= 1e-4 || adim < 1e-10) return Durum(tx, doymaW(tx, a.p), a.p) to top
+    }
 }
 
-/** Duyulur kısım cpm(W1) ile t'yi, toplam enerji (yoğuşan suyun entalpisi 4.186·t1 düşülerek) W'yi belirler. */
-private fun sogutmaSonu(a: Durum, m: Double, duyulur: Double, toplam: Double): Durum {
-    val t = a.t - duyulur / (m * cpm(a.W)); val hw = 4.186 * a.t
-    val W = (a.h - toplam / m - a.W * hw - 1.006 * t) / (2501 + 1.84 * t - hw)
-    return Durum(t, W, a.p)
+/** Cooling capacity sonu (exe 0x9b3b34): t duyulurdan cpm(W1r)·1,2·Q ile, W gizliden 2500·Q·ρ_kuru(t1) ile. */
+private fun sogutmaSonu(a: Durum, q: Double, kw: Double, shf: Double): Durum {
+    val qm = q / 1000; val w = a.Wr - (kw - shf * kw) / (2500 * qm * kuruHavaYogunlugu(a.t, a.p))
+    val c = Durum(a.t - shf * kw / (cpm(a.Wr) * 1.2 * qm), w, a.p)
+    if (w <= 0 || c.rh > 1) throw CozumHatasi("İstenen soğutma ve SHF %100 nem eğrisini aşıyor. Kapasiteyi azaltın, SHF'yi değiştirin ya da doymaya soğutma + yoğuşma kullanın.")
+    return c
 }
+
+private fun kapasite(top: Double, shf: Double, ek: Kapasite = Kapasite()) =
+    ek.copy(toplam = top, duyulur = shf * top, gizli = top - shf * top, shf = shf * 100)
 
 private fun doymaKontrol(d: Durum, mesaj: String) { if (d.W > doymaW(d.t, d.p) * (1 + 1e-9) || d.W < 0) throw CozumHatasi(mesaj) }
 
@@ -65,8 +78,8 @@ fun islemHesapla(tur: IslemTuru, girdi: List<Hava>, param: List<Double>): IslemS
         IslemTuru.BAGLA -> IslemSonucu(emptyList(), listOf(Cizgi(a, girdi[1].d, false)), Kapasite())
         IslemTuru.KARISIM -> {
             val b = girdi[1].d
-            val m1 = girdi[0].debi / a.v; val m2 = girdi[1].debi / b.v
-            val W = (m1 * a.W + m2 * b.W) / (m1 + m2); val h = (m1 * a.h + m2 * b.h) / (m1 + m2)
+            val m1 = girdi[0].debi / a.v; val m2 = girdi[1].debi / b.v  // exe 0x8449dc: yuvarlanmamış W ve h
+            val W = (m1 * a.W + m2 * b.W) / (m1 + m2); val h = (m1 * entalpi(a.t, a.W) + m2 * entalpi(b.t, b.W)) / (m1 + m2)
             val c = Durum(tEntalpidan(h, W), W, p)
             IslemSonucu(listOf(hava(c, girdi[0].debi + girdi[1].debi)), listOf(Cizgi(a, c, false), Cizgi(b, c, false)), Kapasite())
         }
@@ -103,27 +116,36 @@ fun islemHesapla(tur: IslemTuru, girdi: List<Hava>, param: List<Double>): IslemS
         }
         IslemTuru.SOGUTMA_KAPASITE -> {
             val kw = param[0]; val shf = param[1] / 100
-            val c = sogutmaSonu(a, m, kw * shf, kw); val pp2 = Durum(a.t, c.W, p)
-            doymaKontrol(c, "İstenen soğutma ve SHF %100 nem eğrisini aşıyor. Kapasiteyi azaltın, SHF'yi değiştirin ya da doymaya soğutma + yoğuşma kullanın.")
-            IslemSonucu(listOf(hava(c), hava(pp2)), listOf(Cizgi(a, c, false)) + if (araAcik(2)) ara(a, pp2, c) else emptyList(),
-                Kapasite(toplam = kw, duyulur = kw * shf, gizli = kw * (1 - shf), shf = param[1]))
+            val c = sogutmaSonu(a, q, kw, shf); val pp2 = Durum(a.t, c.Wr, p)
+            IslemSonucu(listOf(hava(c), hava(pp2)), listOf(Cizgi(a, c, false)) + if (araAcik(2)) ara(a, pp2, c) else emptyList(), kapasite(kw, shf))
         }
         IslemTuru.DOYMAYA_SOGUTMA -> {
-            val adp = adpKapasite(a, param[0] / 100); val pp2 = Durum(a.t, adp.W, p)
-            IslemSonucu(listOf(hava(adp), hava(pp2)), listOf(Cizgi(a, adp, false)) + if (araAcik(1)) ara(a, pp2, adp) else emptyList(), sogutmaKapasitesi(m, a, adp))
+            val shf = param[0] / 100; val (adp, top) = doymaNoktasi(a, m, shf); val pp2 = Durum(a.t, adp.Wr, p)
+            IslemSonucu(listOf(hava(adp), hava(pp2)), listOf(Cizgi(a, adp, false)) + if (araAcik(1)) ara(a, pp2, adp) else emptyList(), kapasite(top, shf))
         }
         IslemTuru.CIKIS -> {
-            val shf = param[0] / 100; val adp = adpKapasite(a, shf); val bf = param[1] / 100
-            val top = m * (1 - bf) * (a.h - adp.h); val duy = shf * top
-            val c = sogutmaSonu(a, m, duy, top)
+            // exe: T = (1−BF)·T_ADP; çıkış noktası T kW'lık Cooling capacity'nin sonu
+            val shf = param[0] / 100; val (adp, topAdp) = doymaNoktasi(a, m, shf)
+            val top = topAdp - param[1] / 100 * topAdp; val c = sogutmaSonu(a, q, top, shf)
             IslemSonucu(listOf(hava(c), hava(adp)), listOf(Cizgi(a, c, false), Cizgi(c, adp, true)),
-                Kapasite(toplam = top, duyulur = duy, gizli = top - duy, cikisT = a.t - duy / (m * cpm(a.W)), bypass = param[1]))
+                kapasite(top, shf, Kapasite(cikisT = c.t, bypass = param[1])))
+        }
+        IslemTuru.BYPASS -> {
+            // exe: son = Cooling capacity sonu; ADP aynı doğruda, gerçek debiyle kW'tan başlayıp doymaya; BF = 1 − kW/T_ADP
+            val kw = param[0]; val shf = param[1] / 100
+            val c = sogutmaSonu(a, q, kw, shf); val (adp, topAdp) = shfAra(a, shf, q / 1000, kw, true)
+            IslemSonucu(listOf(hava(c), hava(adp)), listOf(Cizgi(a, c, false), Cizgi(c, adp, true)),
+                kapasite(kw, shf, Kapasite(cikisT = c.t, bypass = 100 - kw / topAdp * 100)))
+        }
+        IslemTuru.SHF -> {
+            val c = shfKesisim(a, param[0] / 100)
+            IslemSonucu(listOf(hava(c)), listOf(Cizgi(a, c, false)), Kapasite(shf = param[0]))
         }
         IslemTuru.YOGUSMA -> {
-            val b = Durum(girdi[1].d.t, w5(girdi[1].d.W), p); val a = Durum(a.t, w5(a.W), p)
+            val b = girdi[1].d
             if (a.rh < 0.999 || b.rh < 0.999) throw CozumHatasi("Yoğuşma işlemi için iki nokta da %100 nem eğrisinde olmalı.")
-            IslemSonucu(emptyList(), listOf(Cizgi(a, b, false)), sogutmaKapasitesi(m, a, b).copy(nemKgH = m * (a.W - b.W) * 3600))
+            val x = Durum(a.t, a.Wr, p); val y = Durum(b.t, b.Wr, p)  // kapasite yuvarlanmış W ile
+            IslemSonucu(emptyList(), listOf(Cizgi(a, b, false)), sogutmaKapasitesi(m, x, y).copy(nemKgH = m * (x.W - y.W) * 3600))
         }
-        IslemTuru.SHF, IslemTuru.BYPASS -> throw CozumHatasi("Task 6")
     }
 }

@@ -27,24 +27,30 @@ fun tEntalpidan(h: Double, W: Double) = (h - 2501 * W) / cpm(W)
 fun ozgulHacim(t: Double, W: Double, p: Double) = RDA * (t + 273.15) * (1 + 1.607774067 * W) / p
 fun yogunluk(t: Double, W: Double, p: Double) = (1 + W) / ozgulHacim(t, W, p)
 
-/** Yaş termometre tw'deki havanın nem oranı (ASHRAE eş. 35/37, cp buhar 1.84). */
+/** Yaş termometre tw'deki havanın nem oranı (ASHRAE eş. 35/37, cp buhar 1.84). Dal kuru termometreye göre (exe 0x8446e4: t > 0 su). */
 fun yasW(t: Double, tw: Double, p: Double): Double {
     val ws = doymaW(tw, p)
-    return if (tw >= 0) ((2501 - 2.346 * tw) * ws - 1.006 * (t - tw)) / (2501 + 1.84 * t - 4.186 * tw)
+    return if (t > 0) ((2501 - 2.346 * tw) * ws - 1.006 * (t - tw)) / (2501 + 1.84 * t - 4.186 * tw)
     else ((2834.4 - 0.26 * tw) * ws - 1.006 * (t - tw)) / (2834.4 + 1.84 * t - 2.1 * tw)
 }
 
 fun yasTermometre(t: Double, W: Double, p: Double): Double =
-    kokBul(t, -100.0, 0.5) { tw -> yasW(t, tw, p) - W } ?: Double.NaN
+    kokBul(t + 1, -100.0, 0.5) { tw -> yasW(t, tw, p) - W } ?: Double.NaN  // t + 1: yuvarlanmış W doymayı az aşabilir
 
-/** ASHRAE eş. 39/40 (Peppers). */
+/** ASHRAE eş. 39/40 (Peppers). exe 0x844580: W <= 0 ise 1e-6 (rapordaki -66,2 °C); dal W'nin 0 °C doyma W'sine göre. */
 fun ciyNoktasi(W: Double, p: Double): Double {
-    if (W <= 0) return Double.NaN
-    val pw = buharBasinci(W, p) / 1000
+    val w = if (W <= 0) 1e-6 else W
+    val pw = buharBasinci(w, p) / 1000
     val a = ln(pw)
-    val td = 6.54 + 14.526 * a + 0.7389 * a * a + 0.09486 * a * a * a + 0.4569 * pw.pow(0.1984)
-    return if (td >= 0) td else 6.09 + 12.608 * a + 0.4959 * a * a
+    return if (w < doymaW(0.0, p)) 6.09 + 12.608 * a + 0.4959 * a * a
+    else 6.54 + 14.526 * a + 0.7389 * a * a + 0.09486 * a * a * a + 0.4569 * pw.pow(0.1984)
 }
+
+/** Daikin W'yi 1e-5 kg/kg'a yuvarlayarak taşır (Delphi Round = yarıda çifte, rint). */
+fun w5(W: Double) = Math.rint(W * 1e5) / 1e5
+
+/** t'deki kuru havanın yoğunluğu (exe 0x8438c4); Cooling capacity'nin gizli tarafında kullanılır. */
+fun kuruHavaYogunlugu(t: Double, p: Double) = p / (RDA * (t + 273.15))
 
 // Standart atmosfer; Daikin raporuyla (1500 m = 84555,9 Pa) doğrulandı.
 fun basincRakimdan(z: Double) = P_DENIZ * (1 - 2.25577e-5 * z).pow(5.2559)
@@ -72,12 +78,14 @@ fun kokBul(a: Double, b: Double, adim: Double, f: (Double) -> Double): Double? {
     return null
 }
 
+/** Daikin noktayı (t, RH) tutar; rapor ve işlemler W'yi 5 haneye yuvarlayıp (Wr) h, twb, td'yi ondan hesaplar (exe 0x9b8ec0). RH, v, ρ yuvarlanmamış W'den. */
 data class Durum(val t: Double, val W: Double, val p: Double = P_DENIZ) {
+    val Wr get() = w5(W)
     val pw get() = buharBasinci(W, p)
     val rh get() = pw / pws(t)
-    val h get() = entalpi(t, W)
-    val twb get() = yasTermometre(t, W, p)
-    val td get() = ciyNoktasi(W, p)
+    val h get() = entalpi(t, Wr)
+    val twb get() = yasTermometre(t, Wr, p)
+    val td get() = ciyNoktasi(Wr, p)
     val v get() = ozgulHacim(t, W, p)
     val rho get() = yogunluk(t, W, p)
 }

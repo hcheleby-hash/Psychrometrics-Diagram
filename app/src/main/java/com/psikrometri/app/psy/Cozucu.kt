@@ -7,9 +7,10 @@ enum class Ozellik(val daikinKod: Int, val etiket: String) {
 
 class CozumHatasi(mesaj: String) : Exception(mesaj)
 
+/** Çözücü için yuvarlanmamış değerler (Durum.h/twb Daikin gösterimi gibi Wr kullanır). */
 fun Durum.deger(o: Ozellik) = when (o) {
-    Ozellik.KURU -> t; Ozellik.MUTLAK -> W; Ozellik.BAGIL -> rh * 100; Ozellik.ENTALPI -> h
-    Ozellik.YAS -> twb; Ozellik.HACIM -> v; Ozellik.YOGUNLUK -> rho
+    Ozellik.KURU -> t; Ozellik.MUTLAK -> W; Ozellik.BAGIL -> rh * 100; Ozellik.ENTALPI -> entalpi(t, W)
+    Ozellik.YAS -> yasTermometre(t, W, p); Ozellik.HACIM -> v; Ozellik.YOGUNLUK -> rho
 }
 
 /** t bilinirken o=v sağlayan W (hepsi kapalı form). */
