@@ -1668,7 +1668,7 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
         balon?.let { (o, d) ->
             Card(Modifier.offset { IntOffset(o.x.toInt(), o.y.toInt()) }.widthIn(max = 220.dp)) {
                 Column(Modifier.padding(8.dp)) {
-                    Text("t ${d.t.yaz(1)} °C · W ${d.W.yaz(4)}"); Text("RH %${(d.rh * 100).yaz(1)} · h ${d.h.yaz(1)}")
+                    Text("t ${d.t.yaz(1)} °C · W ${d.Wr.yaz(4)}"); Text("RH %${(d.rh * 100).yaz(1)} · h ${d.h.yaz(1)}")
                     TextButton({ noktaEkle(d); balon = null }) { Text("Nokta ekle") }
                 }
             }
@@ -1968,7 +1968,7 @@ fun VeriSekmesi(vm: AnaVM) {
         val satirlar = listOf(
             "Kuru termometre" to "${tb.goster(d.t).yaz(1)} ${tb.etiket}", "Yaş termometre" to "${tb.goster(d.twb).yaz(1)} ${tb.etiket}",
             "Çiy noktası" to "${tb.goster(d.td).yaz(1)} ${tb.etiket}", "Bağıl nem" to "%${(d.rh * 100).yaz(1)}",
-            "Mutlak nem" to "${b.birim(Buyukluk.NEM).goster(d.W).yaz(4)} ${b.birim(Buyukluk.NEM).etiket}",
+            "Mutlak nem" to "${b.birim(Buyukluk.NEM).goster(d.Wr).yaz(4)} ${b.birim(Buyukluk.NEM).etiket}",
             "Entalpi" to "${b.birim(Buyukluk.ENTALPI).goster(d.h).yaz(1)} ${b.birim(Buyukluk.ENTALPI).etiket}",
             "Yoğunluk" to "${d.rho.yaz(3)} kg/m³", "Özgül hacim" to "${d.v.yaz(3)} m³/kg",
             "Basınç" to "${b.birim(Buyukluk.BASINC).goster(d.p).yaz(1)} ${b.birim(Buyukluk.BASINC).etiket}",
@@ -1982,7 +1982,7 @@ fun VeriSekmesi(vm: AnaVM) {
                 val bas = vm.hesap.hava[isl.girdiler[0]]?.d
                 val son = r.ciktilar.firstOrNull()?.d ?: isl.girdiler.getOrNull(1)?.let { vm.hesap.hava[it]?.d }
                 Text("${isl.tur.etiket} (${(isl.girdiler + isl.ciktilar).joinToString(", ")})", style = MaterialTheme.typography.labelLarge)
-                if (bas != null && son != null) Text("Δt ${(son.t - bas.t).yaz(1)} · ΔW ${(son.W - bas.W).yaz(4)} · Δh ${(son.h - bas.h).yaz(1)}")
+                if (bas != null && son != null) Text("Δt ${(son.t - bas.t).yaz(1)} · ΔW ${(son.Wr - bas.Wr).yaz(4)} · Δh ${(son.h - bas.h).yaz(1)}")
                 Text(r.kapasite.metin())
             }
         }
@@ -2045,7 +2045,7 @@ fun pdfYaz(cikti: OutputStream, proje: Proje, hesap: Hesap, egriler: List<Egri>,
     satir("Nokta   t °C   twb °C   td °C   RH %   W kg/kg   h kJ/kg   ρ kg/m³   v m³/kg   debi l/s", kalin)
     for ((ad, hv) in hesap.hava) {
         val d = hv.d
-        satir("%-6s %6s %7s %7s %6s %9s %8s %8s %8s %8s".format(ad, d.t.yaz(1), d.twb.yaz(1), d.td.yaz(1), (d.rh * 100).yaz(1), d.W.yaz(4), d.h.yaz(1), d.rho.yaz(3), d.v.yaz(3), hv.debi.yaz(1)))
+        satir("%-6s %6s %7s %7s %6s %9s %8s %8s %8s %8s".format(ad, d.t.yaz(1), d.twb.yaz(1), d.td.yaz(1), (d.rh * 100).yaz(1), d.Wr.yaz(4), d.h.yaz(1), d.rho.yaz(3), d.v.yaz(3), hv.debi.yaz(1)))
     }
     y += 10f; satir("İşlemler", kalin)
     proje.islemler.forEachIndexed { i, isl ->
