@@ -57,7 +57,7 @@ fun kokBul(a: Double, b: Double, adim: Double, f: (Double) -> Double): Double? {
     while ((b - x) * yon > 0) {
         val y = if (abs(b - x) < adim) b else x + yon * adim
         val fy = f(y)
-        if (fx == 0.0) return x
+        if (abs(fx) < 1e-12) return x
         if (!fx.isNaN() && !fy.isNaN() && fx * fy <= 0) {
             var lo = x; var hi = y; var flo = fx
             repeat(80) {
@@ -68,6 +68,7 @@ fun kokBul(a: Double, b: Double, adim: Double, f: (Double) -> Double): Double? {
         }
         x = y; fx = fy
     }
+    if (abs(fx) < 1e-12) return x
     return null
 }
 
