@@ -43,7 +43,8 @@ public class M {
 }
 '@
 $main = [IntPtr]$win.Current.NativeWindowHandle
-function RealClick($x, $y) { [M]::SetForegroundWindow($main) | Out-Null; [M]::SetCursorPos($x, $y) | Out-Null; Start-Sleep -m 80
+Add-Type -Name Z -Namespace D -MemberDefinition '[DllImport("user32.dll")] public static extern bool IsIconic(IntPtr h); [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);'
+function RealClick($x, $y) { if ([D.Z]::IsIconic($main)) { [D.Z]::ShowWindow($main, 9) | Out-Null; Start-Sleep -m 800 }; [M]::SetForegroundWindow($main) | Out-Null; [M]::SetCursorPos($x, $y) | Out-Null; Start-Sleep -m 80
   [M]::mouse_event(2,0,0,0,[IntPtr]::Zero); [M]::mouse_event(4,0,0,0,[IntPtr]::Zero); Start-Sleep -m 150 }
 function Yaz($x, $y, $txt) { RealClick $x $y; [System.Windows.Forms.SendKeys]::SendWait("^a" + $txt + "{TAB}"); Start-Sleep -m 250 }
 function PClick($h) { [M]::PostMessage($h, 0x00F5, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; Start-Sleep -m 500 }  # BM_CLICK, kutu açılırsa takılmaz

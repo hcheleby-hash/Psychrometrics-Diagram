@@ -55,33 +55,33 @@ Specific volume | 1,045m³/kg | Specific volume | 0,978m³/kg | Specific volume | 
 Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
 Airflow | 150,0l/s | Airflow | 450,0l/s | Airflow | 300,0l/s | Airflow | 150,0l/s | 
 X4 | X5 | X6 | X7 | 
-Dry bulb temperature | 35,0°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 29,5°C | Dry bulb temperature | 20,0°C | 
-Wet bulb temperature | 20,8°C | Wet bulb temperature | 9,3°C | Wet bulb temperature | 12,3°C | Wet bulb temperature | 7,2°C | 
+Dry bulb temperature | 35,0°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 31,0°C | Dry bulb temperature | 20,0°C | 
+Wet bulb temperature | 20,8°C | Wet bulb temperature | 9,3°C | Wet bulb temperature | 12,8°C | Wet bulb temperature | 7,2°C | 
 Dew point | 14,8°C | Dew point | -2,7°C | Dew point | -2,7°C | Dew point | -7,5°C | 
-Relative humidity | 29,9% | Relative humidity | 18,4% | Relative humidity | 11,8% | Relative humidity | 13,9% | 
+Relative humidity | 29,9% | Relative humidity | 18,4% | Relative humidity | 10,8% | Relative humidity | 13,9% | 
 Absolute humidity | 0,0126kg/kg | Absolute humidity | 0,0036kg/kg | Absolute humidity | 0,0036kg/kg | Absolute humidity | 0,0024kg/kg | 
-Enthalpy | 67,6kJ/kg | Enthalpy | 31,3kJ/kg | Enthalpy | 38,9kJ/kg | Enthalpy | 26,2kJ/kg | 
-Density | 0,949kg/m³ | Density | 0,996kg/m³ | Density | 0,971kg/m³ | Density | 1,003kg/m³ | 
-Specific volume | 1,067m³/kg | Specific volume | 1,008m³/kg | Specific volume | 1,034m³/kg | Specific volume | 0,999m³/kg | 
+Enthalpy | 67,6kJ/kg | Enthalpy | 31,3kJ/kg | Enthalpy | 40,4kJ/kg | Enthalpy | 26,2kJ/kg | 
+Density | 0,949kg/m³ | Density | 0,996kg/m³ | Density | 0,966kg/m³ | Density | 1,003kg/m³ | 
+Specific volume | 1,067m³/kg | Specific volume | 1,008m³/kg | Specific volume | 1,039m³/kg | Specific volume | 0,999m³/kg | 
 Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
 Airflow | 100,0l/s | Airflow | 300,0l/s | Airflow | 300,0l/s | Airflow | 200,0l/s | 
 X8 | | | | | | | 
-Dry bulb temperature | 32,6°C | | | | | | | 
-Wet bulb temperature | 12,3°C | | | | | | | 
+Dry bulb temperature | 35,1°C | | | | | | | 
+Wet bulb temperature | 13,2°C | | | | | | | 
 Dew point | -7,5°C | | | | | | | 
-Relative humidity | 6,6% | | | | | | | 
+Relative humidity | 5,7% | | | | | | | 
 Absolute humidity | 0,0024kg/kg | | | | | | | 
-Enthalpy | 38,9kJ/kg | | | | | | | 
-Density | 0,962kg/m³ | | | | | | | 
-Specific volume | 1,042m³/kg | | | | | | | 
+Enthalpy | 41,5kJ/kg | | | | | | | 
+Density | 0,954kg/m³ | | | | | | | 
+Specific volume | 1,050m³/kg | | | | | | | 
 Pressure | 84555,9Pa | | | | | | | 
 Airflow | 200,0l/s | | | | | | | 
 X. Actions
 Mix air: A, B, X1 | 
 Mix air: C, D, X2 | 
-Cooling: A, E, X3 (Capacities: Total = 3,49kW, Sensible = 2,57kW (74%), Latent = 0,92kW) | 
-Cooling: C, F, X4 (Capacities: Total = 3,72kW, Sensible = 2,34kW (63%), Latent = 1,39kW) | 
-Heating: B, G, X5 (Capacities: Total = 4,47kW, Sensible = 3,11kW (70%), Latent = 1,36kW, Steam humidification = 3,89kg/h) | 
-Heating: B, G, X6 (Capacities: Total = 4,47kW, Sensible = 3,11kW (4,49kW), Latent = 1,36kW, Water humidification = 3,89kg/h) | 
-Heating: D, H, X7 (Capacities: Total = 9,10kW, Sensible = 6,11kW (67%), Latent = 2,99kW, Steam humidification = 4,32kg/h) | 
-Heating: D, H, X8 (Capacities: Total = 9,10kW, Sensible = 6,11kW (9,19kW), Latent = 2,99kW, Water humidification = 4,32kg/h) |
+Cooling: A, E, X3 (Capacities: Total = 3,69kW, Sensible = 2,58kW (70%), Latent = 1,11kW) | 
+Cooling: C, F, X4 (Capacities: Total = 4,02kW, Sensible = 2,35kW (58%), Latent = 1,67kW) | 
+Heating: B, G, X5 (Capacities: Total = 4,75kW, Sensible = 3,12kW (66%), Latent = 1,63kW, Steam humidification = 4,67kg/h) | 
+Heating: B, G, X6 (Capacities: Total = 4,75kW, Sensible = 3,12kW (4,78kW), Latent = 1,63kW, Water humidification = 4,67kg/h) | 
+Heating: D, H, X7 (Capacities: Total = 9,72kW, Sensible = 6,13kW (63%), Latent = 3,59kW, Steam humidification = 5,19kg/h) | 
+Heating: D, H, X8 (Capacities: Total = 9,72kW, Sensible = 6,13kW (9,83kW), Latent = 3,59kW, Water humidification = 5,19kg/h) |

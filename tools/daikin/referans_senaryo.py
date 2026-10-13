@@ -48,8 +48,8 @@ def islem_senaryosu():
     for kod, cift in ((7, (('A', 5), ('K', 2))), (8, (('A', 1), ('L', 2))), (11, (('A', 5), ('M', 3)))):
         for p_, kg in cift:                                                                 # Steam / Water / Dehum
             x = pp()[0]; s.append(f'{R} {kod} {p_} {x} {x} {kg}')
-    for p_, kw, shf in (('A', 2, 75), ('C', 4, 60), ('N', 3, 90)):                          # Cooling capacity
-        a, b = pp(2); s.append(f'{R} 5 {p_} {a} {b} {kw} {shf} 1')
+    for p_, kw, shf in (('A', 2, 75), ('C', 4, 60), ('N', 1.5, 90)):                        # Cooling capacity
+        a, b = pp(2); s.append(f'{R} 5 {p_} {a} {b} {f(kw)} {shf} 1')
     for p_, shf in (('A', 75), ('A', 90), ('C', 60), ('C', 75), ('C', 90)):                 # Cool to saturation
         a, b = pp(2); s.append(f'{R} 9 {p_} {a} {b} 0 {shf} 1')
     for p_, shf, bf in (('A', 75, 10), ('C', 60, 20)):                                      # Discharge
