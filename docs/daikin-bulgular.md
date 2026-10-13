@@ -16,6 +16,8 @@ Yoğunluk: ρ = (1 + W) / v (P1 27 °C / 0,0100 → 1,169 ✓).
   - Özellik indeksleri: 0 kuru term., 1 mutlak nem, 2 bağıl nem, 3 entalpi, 4 yaş term., 5 özgül hacim, 6 yoğunluk
 - İşlem: `2 <renk BGR int> <tür> <girdiler...> <çıktılar...> <parametreler...>`
 - Türetilen PP noktaları dosyaya yazılmaz, açılışta hesaplanır.
+- **Rakım `.ppp`'ye yazılmaz.** 1500 m ile kaydedilen proje bayt bayt aynı (rakımsız) çıktı verdi; boş projeyi kaydetmek 2 baytlık (BOM) dosya üretir. Açılışta Altitude 0'a döner; rakım, dosya açıldıktan sonra Altitude alanına (≈335,69) `Yaz` ile girilir, rapor o rakımla alınır. Rakım değişince nokta RH'si korunur (W, h, ρ yeniden hesaplanır). 1500 m → 84555,9 Pa = `101325·(1−2,25577e-5·z)^5,2559` (Kotlin `basincRakimdan` ile birebir).
+- **Önbellek alanları (8. t, 9. RH%) esastır:** özellik1/özellik2 değerleri yerine bunlar kullanılıyor. `0 0` yazılan nokta raporda 0 °C / 0 % çıktı. Yani `ppp_yaz.nokta` önbelleği doğru yazmalı; nokta tanımındaki (özellik, değer) çifti rapora etki etmiyor.
 
 | Kod | İşlem | Satır şablonu |
 |---|---|---|
@@ -67,3 +69,5 @@ Toplam = m·(h_a − h_b); duyulur = m·cpm(W_b)·(t_a − t_b); gizli = toplam 
 - Mesaj kutuları `TBaseMsg`; `DialogKapat` sadece onları kapatır (dosya penceresi `#32770`, dokunma).
 - Adı olan projede "Save As..." doğrudan kaydeder. Açmak: `RealClick 50 179` + yol + Enter. Rapor: `Rapor <hedef>`.
 - Koordinatlar 1920×1080 sol monitör, pencere tam ekran.
+- Rapor/oturum tuzakları: `Ac` PowerShell takma adı (Add-Content) olduğundan fonksiyon `AcDosya` adıyla; Report… Windows'un "birlikte aç" kutusunu açar ve Word ilk rapor dosyasını kilitlerse sonraki raporlar "Cannot create file" verir (`Rapor` artık eski rtf'yi siler ve Word'ü kapatır). Daikin simge durumundaysa `RealClick` başka pencereye tıklar (dk.ps1 başlangıçta geri getirir).
+- Başarısız işlemler (kök yok, doymayı aşan kapasite) raporda hiç listelenmez; mesaj kutusu her zaman çıkmaz (ref_islem'de Cooling capacity N sessizce düştü; ref_rakim'de 1500 m'de bir işlem TBaseMsg verdi).

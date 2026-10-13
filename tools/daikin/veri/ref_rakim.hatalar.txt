@@ -1,0 +1,1 @@
+﻿TBaseMsg: The required cooling action with the required SFH value crosses the 100%RH line and cannot be represented. Reduce the given total cooling capacity, change the SHF percentage or use a combination of actions (e.g. cool to saturation and condensate).

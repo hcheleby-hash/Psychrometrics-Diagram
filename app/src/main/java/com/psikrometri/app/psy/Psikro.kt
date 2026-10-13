@@ -46,7 +46,7 @@ fun ciyNoktasi(W: Double, p: Double): Double {
     return if (td >= 0) td else 6.09 + 12.608 * a + 0.4959 * a * a
 }
 
-// ponytail: standart atmosfer; Daikin'in rakım formülü Task 3 referansıyla doğrulanır.
+// Standart atmosfer; Daikin raporuyla (1500 m = 84555,9 Pa) doğrulandı.
 fun basincRakimdan(z: Double) = P_DENIZ * (1 - 2.25577e-5 * z).pow(5.2559)
 fun rakimBasinctan(p: Double) = (1 - (p / P_DENIZ).pow(1 / 5.2559)) / 2.25577e-5
 

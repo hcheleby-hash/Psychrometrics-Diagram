@@ -42,6 +42,7 @@ class PsikroTest {
         assertEquals(P_DENIZ, basincRakimdan(0.0), 1e-6)
         assertEquals(1500.0, rakimBasinctan(basincRakimdan(1500.0)), 1e-6)
     }
+    @Test fun rakimDaikin() = assertEquals(84555.9, basincRakimdan(1500.0), 0.05)  // ref_rakim raporu
 
     @Test fun kokBulAzalanYonde() {
         assertEquals(2.0, kokBul(10.0, -10.0, 0.5) { it - 2.0 }!!, 1e-9)

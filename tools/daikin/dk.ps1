@@ -84,7 +84,7 @@ function KaydetFarkli($yol) {
   # üzerine yazma onayı çıkarsa Evet
   foreach ($d in [Q]::Dialogs([uint32]$p.Id)) { [System.Windows.Forms.SendKeys]::SendWait('%y'); Start-Sleep -m 800 }
 }
-function Ac($yol) {
+function AcDosya($yol) {  # "Ac" PowerShell takma adi (Add-Content) ile cakisir
   DialogKapat | Out-Null
   RealClick 50 179; Start-Sleep -m 1500
   $m = DialogKapat; if ($m) { "acarken: $m"; Start-Sleep -m 1200 }
@@ -92,10 +92,13 @@ function Ac($yol) {
   [System.Windows.Forms.SendKeys]::SendWait('{ENTER}'); Start-Sleep -m 2000
   $m = DialogKapat; if ($m) { "acilinca: $m" }
 }
+function WordKapat() { Get-Process | ? { $_.Name -like '*word*' -and $_.MainWindowTitle -like '*Psychrometrics_*' } | Stop-Process -Force }
 function Rapor($hedef) {
+  WordKapat; Remove-Item "$env:TEMP\Psychrometrics_*.rtf" -Force -ErrorAction SilentlyContinue
   $once = Get-Date
-  RealClick 50 227; Start-Sleep -m 2500
-  [System.Windows.Forms.SendKeys]::SendWait('{ESC}'); Start-Sleep -m 500
+  RealClick 50 227; Start-Sleep -m 3000
+  [System.Windows.Forms.SendKeys]::SendWait('{ESC}'); Start-Sleep -m 800
   $r = Get-ChildItem "$env:TEMP\Psychrometrics_*.rtf" | ? { $_.LastWriteTime -ge $once.AddSeconds(-2) } | Sort-Object LastWriteTime | Select-Object -Last 1
   if ($r) { Copy-Item $r.FullName $hedef; "rapor: $hedef" } else { "rapor yok" }
+  WordKapat; DialogKapat | Out-Null
 }

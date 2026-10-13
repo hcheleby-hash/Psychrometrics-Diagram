@@ -1,0 +1,87 @@
+X. Psychrometric points
+A | B | C | D | 
+Dry bulb temperature | 27,0°C | Dry bulb temperature | 5,0°C | Dry bulb temperature | 35,0°C | Dry bulb temperature | -5,0°C | 
+Wet bulb temperature | 18,2°C | Wet bulb temperature | 1,5°C | Wet bulb temperature | 24,0°C | Wet bulb temperature | -5,9°C | 
+Dew point | 14,1°C | Dew point | -2,7°C | Dew point | 20,3°C | Dew point | -7,5°C | 
+Relative humidity | 44,9% | Relative humidity | 55,7% | Relative humidity | 42,4% | Relative humidity | 80,8% | 
+Absolute humidity | 0,0120kg/kg | Absolute humidity | 0,0036kg/kg | Absolute humidity | 0,0181kg/kg | Absolute humidity | 0,0024kg/kg | 
+Enthalpy | 57,8kJ/kg | Enthalpy | 14,1kJ/kg | Enthalpy | 81,5kJ/kg | Enthalpy | 1,0kJ/kg | 
+Density | 0,974kg/m³ | Density | 1,057kg/m³ | Density | 0,946kg/m³ | Density | 1,097kg/m³ | 
+Specific volume | 1,039m³/kg | Specific volume | 0,950m³/kg | Specific volume | 1,077m³/kg | Specific volume | 0,914m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 150,0l/s | Airflow | 300,0l/s | Airflow | 100,0l/s | Airflow | 200,0l/s | 
+E | F | G | H | 
+Dry bulb temperature | 13,0°C | Dry bulb temperature | 16,0°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 20,0°C | 
+Wet bulb temperature | 11,6°C | Wet bulb temperature | 15,2°C | Wet bulb temperature | 12,7°C | Wet bulb temperature | 13,1°C | 
+Dew point | 10,7°C | Dew point | 14,8°C | Dew point | 6,5°C | Dew point | 8,8°C | 
+Relative humidity | 85,9% | Relative humidity | 92,5% | Relative humidity | 36,6% | Relative humidity | 48,2% | 
+Absolute humidity | 0,0096kg/kg | Absolute humidity | 0,0126kg/kg | Absolute humidity | 0,0072kg/kg | Absolute humidity | 0,0084kg/kg | 
+Enthalpy | 37,3kJ/kg | Enthalpy | 48,0kJ/kg | Enthalpy | 40,4kJ/kg | Enthalpy | 41,5kJ/kg | 
+Density | 1,023kg/m³ | Density | 1,011kg/m³ | Density | 0,994kg/m³ | Density | 1,000kg/m³ | 
+Specific volume | 0,986m³/kg | Specific volume | 1,002m³/kg | Specific volume | 1,014m³/kg | Specific volume | 1,009m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 150,0l/s | Airflow | 100,0l/s | Airflow | 150,0l/s | Airflow | 200,0l/s | 
+K | L | M | N | 
+Dry bulb temperature | 20,0°C | Dry bulb temperature | 30,0°C | Dry bulb temperature | 20,0°C | Dry bulb temperature | 30,0°C | 
+Wet bulb temperature | 10,9°C | Wet bulb temperature | 15,5°C | Wet bulb temperature | 17,8°C | Wet bulb temperature | 20,6°C | 
+Dew point | 3,9°C | Dew point | 6,5°C | Dew point | 16,9°C | Dew point | 16,9°C | 
+Relative humidity | 34,5% | Relative humidity | 22,8% | Relative humidity | 82,0% | Relative humidity | 45,2% | 
+Absolute humidity | 0,0060kg/kg | Absolute humidity | 0,0072kg/kg | Absolute humidity | 0,0144kg/kg | Absolute humidity | 0,0144kg/kg | 
+Enthalpy | 35,3kJ/kg | Enthalpy | 48,6kJ/kg | Enthalpy | 56,8kJ/kg | Enthalpy | 67,1kJ/kg | 
+Density | 1,001kg/m³ | Density | 0,967kg/m³ | Density | 0,996kg/m³ | Density | 0,963kg/m³ | 
+Specific volume | 1,005m³/kg | Specific volume | 1,041m³/kg | Specific volume | 1,018m³/kg | Specific volume | 1,053m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+S1 | S2 | S3 | S4 | 
+Dry bulb temperature | 12,0°C | Dry bulb temperature | 8,0°C | Dry bulb temperature | 20,0°C | Dry bulb temperature | 10,0°C | 
+Wet bulb temperature | 12,0°C | Wet bulb temperature | 8,0°C | Wet bulb temperature | 20,0°C | Wet bulb temperature | 10,0°C | 
+Dew point | 12,0°C | Dew point | 8,0°C | Dew point | 20,0°C | Dew point | 10,0°C | 
+Relative humidity | 100,0% | Relative humidity | 100,0% | Relative humidity | 100,0% | Relative humidity | 100,0% | 
+Absolute humidity | 0,0105kg/kg | Absolute humidity | 0,0080kg/kg | Absolute humidity | 0,0177kg/kg | Absolute humidity | 0,0092kg/kg | 
+Enthalpy | 38,5kJ/kg | Enthalpy | 28,1kJ/kg | Enthalpy | 65,0kJ/kg | Enthalpy | 33,2kJ/kg | 
+Density | 1,027kg/m³ | Density | 1,043kg/m³ | Density | 0,994kg/m³ | Density | 1,035kg/m³ | 
+Specific volume | 0,984m³/kg | Specific volume | 0,967m³/kg | Specific volume | 1,024m³/kg | Specific volume | 0,975m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | Airflow | 150,0l/s | 
+Q | X1 | X2 | X3 | 
+Dry bulb temperature | 30,0°C | Dry bulb temperature | 12,0°C | Dry bulb temperature | 7,2°C | Dry bulb temperature | 27,0°C | 
+Wet bulb temperature | 17,3°C | Wet bulb temperature | 7,9°C | Wet bulb temperature | 6,6°C | Wet bulb temperature | 16,4°C | 
+Dew point | 10,7°C | Dew point | 4,5°C | Dew point | 6,3°C | Dew point | 10,7°C | 
+Relative humidity | 30,3% | Relative humidity | 60,0% | Relative humidity | 93,8% | Relative humidity | 36,1% | 
+Absolute humidity | 0,0096kg/kg | Absolute humidity | 0,0062kg/kg | Absolute humidity | 0,0071kg/kg | Absolute humidity | 0,0096kg/kg | 
+Enthalpy | 54,7kJ/kg | Enthalpy | 27,8kJ/kg | Enthalpy | 25,0kJ/kg | Enthalpy | 51,7kJ/kg | 
+Density | 0,966kg/m³ | Density | 1,029kg/m³ | Density | 1,046kg/m³ | Density | 0,976kg/m³ | 
+Specific volume | 1,045m³/kg | Specific volume | 0,978m³/kg | Specific volume | 0,962m³/kg | Specific volume | 1,035m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 150,0l/s | Airflow | 450,0l/s | Airflow | 300,0l/s | Airflow | 150,0l/s | 
+X4 | X5 | X6 | X7 | 
+Dry bulb temperature | 35,0°C | Dry bulb temperature | 22,0°C | Dry bulb temperature | 29,5°C | Dry bulb temperature | 20,0°C | 
+Wet bulb temperature | 20,8°C | Wet bulb temperature | 9,3°C | Wet bulb temperature | 12,3°C | Wet bulb temperature | 7,2°C | 
+Dew point | 14,8°C | Dew point | -2,7°C | Dew point | -2,7°C | Dew point | -7,5°C | 
+Relative humidity | 29,9% | Relative humidity | 18,4% | Relative humidity | 11,8% | Relative humidity | 13,9% | 
+Absolute humidity | 0,0126kg/kg | Absolute humidity | 0,0036kg/kg | Absolute humidity | 0,0036kg/kg | Absolute humidity | 0,0024kg/kg | 
+Enthalpy | 67,6kJ/kg | Enthalpy | 31,3kJ/kg | Enthalpy | 38,9kJ/kg | Enthalpy | 26,2kJ/kg | 
+Density | 0,949kg/m³ | Density | 0,996kg/m³ | Density | 0,971kg/m³ | Density | 1,003kg/m³ | 
+Specific volume | 1,067m³/kg | Specific volume | 1,008m³/kg | Specific volume | 1,034m³/kg | Specific volume | 0,999m³/kg | 
+Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | Pressure | 84555,9Pa | 
+Airflow | 100,0l/s | Airflow | 300,0l/s | Airflow | 300,0l/s | Airflow | 200,0l/s | 
+X8 | | | | | | | 
+Dry bulb temperature | 32,6°C | | | | | | | 
+Wet bulb temperature | 12,3°C | | | | | | | 
+Dew point | -7,5°C | | | | | | | 
+Relative humidity | 6,6% | | | | | | | 
+Absolute humidity | 0,0024kg/kg | | | | | | | 
+Enthalpy | 38,9kJ/kg | | | | | | | 
+Density | 0,962kg/m³ | | | | | | | 
+Specific volume | 1,042m³/kg | | | | | | | 
+Pressure | 84555,9Pa | | | | | | | 
+Airflow | 200,0l/s | | | | | | | 
+X. Actions
+Mix air: A, B, X1 | 
+Mix air: C, D, X2 | 
+Cooling: A, E, X3 (Capacities: Total = 3,49kW, Sensible = 2,57kW (74%), Latent = 0,92kW) | 
+Cooling: C, F, X4 (Capacities: Total = 3,72kW, Sensible = 2,34kW (63%), Latent = 1,39kW) | 
+Heating: B, G, X5 (Capacities: Total = 4,47kW, Sensible = 3,11kW (70%), Latent = 1,36kW, Steam humidification = 3,89kg/h) | 
+Heating: B, G, X6 (Capacities: Total = 4,47kW, Sensible = 3,11kW (4,49kW), Latent = 1,36kW, Water humidification = 3,89kg/h) | 
+Heating: D, H, X7 (Capacities: Total = 9,10kW, Sensible = 6,11kW (67%), Latent = 2,99kW, Steam humidification = 4,32kg/h) | 
+Heating: D, H, X8 (Capacities: Total = 9,10kW, Sensible = 6,11kW (9,19kW), Latent = 2,99kW, Water humidification = 4,32kg/h) |
