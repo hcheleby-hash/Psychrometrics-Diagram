@@ -73,7 +73,7 @@ class ReferansTest {
         return hava to sonuc
     }
 
-    private fun kapasiteKarsilastir(etiket: String, b: JSONObject, k: Kapasite) {
+    fun kapasiteKarsilastir(etiket: String, b: JSONObject, k: Kapasite) {
         val es = mapOf("Total" to k.toplam, "Sensible" to k.duyulur, "Latent" to k.gizli, "Heating" to k.isitici,
             "Dehumidification" to k.nemKgH, "Steam humidification" to k.nemKgH, "Water humidification" to k.nemKgH,
             "Discharge" to k.cikisT, "Bypass factor" to k.bypass, "SHF" to k.shf)

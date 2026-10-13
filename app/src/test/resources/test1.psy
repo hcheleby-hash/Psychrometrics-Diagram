@@ -1,0 +1,175 @@
+{
+ "surum": 1,
+ "rakim": 0.0,
+ "noktalar": [
+  {
+   "ad": "P1",
+   "o1": "KURU",
+   "v1": 27.0,
+   "o2": "BAGIL",
+   "v2": 44.9441962635556,
+   "debi": 150.0,
+   "renk": -15374912
+  },
+  {
+   "ad": "P2",
+   "o1": "KURU",
+   "v1": 15.0,
+   "o2": "BAGIL",
+   "v2": 75.4471482056509,
+   "debi": 150.0,
+   "renk": -15374912
+  },
+  {
+   "ad": "P3",
+   "o1": "KURU",
+   "v1": 35.0,
+   "o2": "BAGIL",
+   "v2": 42.3978002755472,
+   "debi": 150.0,
+   "renk": -15374912
+  }
+ ],
+ "islemler": [
+  {
+   "tur": "BAGLA",
+   "girdiler": [
+    "P1",
+    "P2"
+   ],
+   "ciktilar": [],
+   "param": [],
+   "renk": -16776961
+  },
+  {
+   "tur": "DOYMAYA_SOGUTMA",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP1",
+    "PP2"
+   ],
+   "param": [
+    75.0,
+    1.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "SOGUTMA",
+   "girdiler": [
+    "P1",
+    "P2"
+   ],
+   "ciktilar": [
+    "PP3"
+   ],
+   "param": [],
+   "renk": -16776961
+  },
+  {
+   "tur": "NEM_ALMA",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP4"
+   ],
+   "param": [
+    5.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "CIKIS",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP5",
+    "PP6"
+   ],
+   "param": [
+    75.0,
+    10.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "ISITMA",
+   "girdiler": [
+    "P1",
+    "P2"
+   ],
+   "ciktilar": [
+    "PP7"
+   ],
+   "param": [
+    1.0,
+    1.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "ISITMA_KAPASITE",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP8"
+   ],
+   "param": [
+    5.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "KARISIM",
+   "girdiler": [
+    "P1",
+    "P2"
+   ],
+   "ciktilar": [
+    "PP9"
+   ],
+   "param": [],
+   "renk": -16776961
+  },
+  {
+   "tur": "SHF",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP10"
+   ],
+   "param": [
+    75.0
+   ],
+   "renk": -16776961
+  },
+  {
+   "tur": "NOKTA_GOSTER",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [],
+   "param": [],
+   "renk": -16776961
+  },
+  {
+   "tur": "BUHAR_NEM",
+   "girdiler": [
+    "P1"
+   ],
+   "ciktilar": [
+    "PP11"
+   ],
+   "param": [
+    5.0
+   ],
+   "renk": -16776961
+  }
+ ]
+}
