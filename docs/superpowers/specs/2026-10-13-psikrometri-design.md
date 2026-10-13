@@ -20,7 +20,7 @@ Tek sürümde hepsi:
 - PDF rapor + paylaş
 - Birim seçimi
 
-Platform: yalnız Android. Kotlin + Jetpack Compose, tek modül, paket `com.psikrometri.app`. Ek bağımlılık yok (JSON: `org.json`, PDF: `android.graphics.pdf.PdfDocument`, ayar: DataStore).
+Platform: yalnız Android. Kotlin + Jetpack Compose, tek modül, paket `com.psikrometri.app`. Ek bağımlılık yok (JSON: `org.json`, PDF: `android.graphics.pdf.PdfDocument`, ayar: SharedPreferences).
 
 ## Hesap çekirdeği (`psy/`, saf Kotlin)
 
@@ -99,7 +99,7 @@ Bölünmüş ekran: üstte diyagram, altta sekmeler **Noktalar / İşlemler / Ve
 
 - Kaydet/Aç: `.psy` (JSON), Android dosya seçici (SAF).
 - Rapor: PDF — diyagram, nokta tablosu, işlem sonuçları; paylaş menüsü.
-- Ayarlar (DataStore): °C/°F, kg/kg–g/kg, l/s–m³/h, kJ/kg–kcal/kg, kPa–Pa–mbar; eksen aralıkları; varsayılan eğri görünürlüğü.
+- Ayarlar (SharedPreferences): °C/°F, kg/kg–g/kg, l/s–m³/h, kJ/kg–kcal/kg, kPa–Pa–mbar; eksen aralıkları; varsayılan eğri görünürlüğü.
 
 ## Doğrulama
 
