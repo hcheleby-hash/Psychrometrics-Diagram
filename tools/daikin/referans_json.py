@@ -9,7 +9,7 @@ def ppp_oku(yol):
         a = satir.split()
         if not a: continue
         if a[0] == '1':
-            noktalar.append({'ad': a[1], 'o1': int(a[2]), 'v1': sayi(a[3]), 'o2': int(a[4]), 'v2': sayi(a[5]), 'debi': sayi(a[6])})
+            noktalar.append({'ad': a[1], 'o1': int(a[2]), 'v1': sayi(a[3]), 'o2': int(a[4]), 'v2': sayi(a[5]), 'debi': sayi(a[6]), 'tc': sayi(a[7]), 'rhc': sayi(a[8])})
         elif a[0] == '2':
             kod, geri = int(a[2]), a[3:]
             girdi_n = {0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 10: 2}.get(kod, 1)
@@ -61,7 +61,14 @@ def senaryo(ppp):
             ad = isl['cikti'][0] if isl['cikti'] else f"{isl['kod']}:" + ':'.join(isl['girdi'])
             beklenen_islemler[ad] = bek_i[anahtar_rapor]
     basinc = next(iter(bek_n.values()))['p']  # raporun "Pressure" satırı; rakımlı senaryoda da doğru basınç
-    return {'ad': os.path.basename(taban), 'basinc': basinc, 'noktalar': noktalar, 'islemler': islemler,
+    ek = {}
+    for n in noktalar:
+        tc, rhc = n.pop('tc'), n.pop('rhc')
+        if basinc != 101325.0:  # rakımda önbellek t/RH esas (Daikin RH'yi korur)
+            n['tanim'] = {k: n[k] for k in ('o1', 'v1', 'o2', 'v2')}
+            n.update(o1=0, v1=tc, o2=2, v2=rhc)
+    if basinc != 101325.0: ek['rakim'] = 1500
+    return {**ek, 'ad': os.path.basename(taban), 'basinc': basinc, 'noktalar': noktalar, 'islemler': islemler,
             'beklenen_noktalar': bek_n, 'beklenen_islemler': beklenen_islemler, 'hatalar': hatalar}
 
 if __name__ == '__main__':

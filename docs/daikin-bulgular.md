@@ -71,3 +71,4 @@ Toplam = m·(h_a − h_b); duyulur = m·cpm(W_b)·(t_a − t_b); gizli = toplam 
 - Koordinatlar 1920×1080 sol monitör, pencere tam ekran.
 - Rapor/oturum tuzakları: `Ac` PowerShell takma adı (Add-Content) olduğundan fonksiyon `AcDosya` adıyla; Report… Windows'un "birlikte aç" kutusunu açar ve Word ilk rapor dosyasını kilitlerse sonraki raporlar "Cannot create file" verir (`Rapor` artık eski rtf'yi siler ve Word'ü kapatır). Daikin simge durumundaysa `RealClick` başka pencereye tıklar (dk.ps1 başlangıçta geri getirir).
 - Başarısız işlemler (kök yok, doymayı aşan kapasite) raporda hiç listelenmez; mesaj kutusu her zaman çıkmaz (ref_islem'de Cooling capacity N sessizce düştü; ref_rakim'de 1500 m'de bir işlem TBaseMsg verdi).
+- ref_rakim'in tek `hatalar` girdisi ("crosses the 100%RH line") listelenen hiçbir işleme atfedilemez (8 işlemin hiçbiri SHF değil); tüketiciler üzerinde assert etmemeli.
