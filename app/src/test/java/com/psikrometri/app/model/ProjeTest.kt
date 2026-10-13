@@ -35,4 +35,17 @@ class ProjeTest {
     }
 
     @Test fun ppAdi() { assertEquals("PP5", proje.yeniPPAdi()) }
+
+    private fun bozuk(degistir: (org.json.JSONObject) -> Unit) = runCatching { Proje.jsonOku(org.json.JSONObject(proje.json()).also(degistir).toString()) }
+
+    @Test fun jsonOkuBozukDosyayiReddeder() {
+        assertTrue(bozuk { }.isSuccess)
+        val isl = { o: org.json.JSONObject, k: Int -> o.getJSONArray("islemler").getJSONObject(k) }
+        assertTrue("eksik girdi", bozuk { isl(it, 0).put("girdiler", org.json.JSONArray(listOf("P1"))) }.isFailure)
+        assertTrue("eksik çıktı", bozuk { isl(it, 2).put("ciktilar", org.json.JSONArray(listOf("PP3"))) }.isFailure)
+        assertTrue("eksik parametre", bozuk { isl(it, 1).put("param", org.json.JSONArray()) }.isFailure)
+        assertTrue("debi 0", bozuk { it.getJSONArray("noktalar").getJSONObject(0).put("debi", 0.0) }.isFailure)
+        assertTrue("ad tekrarı", bozuk { it.getJSONArray("noktalar").getJSONObject(1).put("ad", "P1") }.isFailure)
+        assertTrue("çıktı nokta adıyla çakışıyor", bozuk { isl(it, 0).put("ciktilar", org.json.JSONArray(listOf("P2"))) }.isFailure)
+    }
 }

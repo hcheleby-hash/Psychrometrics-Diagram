@@ -16,6 +16,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.psikrometri.app.model.Buyukluk
 import com.psikrometri.app.psy.Durum
 import com.psikrometri.app.psy.doymaW
 
@@ -52,7 +53,9 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
         balon?.let { (o, d) ->
             Card(Modifier.offset { IntOffset(o.x.coerceIn(0f, (boyut.width - 220 * yog).coerceAtLeast(0f)).toInt(), o.y.coerceIn(0f, (boyut.height - 130 * yog).coerceAtLeast(0f)).toInt()) }.widthIn(max = 220.dp)) {
                 Column(Modifier.padding(8.dp)) {
-                    Text("t ${d.t.yaz(1)} °C · W ${d.Wr.yaz(4)}"); Text("RH %${(d.rh * 100).yaz(1)} · h ${d.h.yaz(1)}")
+                    val b = vm.ayarlar.birimler
+                    Text("t ${b.birim(Buyukluk.SICAKLIK).yazB(d.t, 1)} · W ${b.birim(Buyukluk.NEM).yazB(d.Wr, b.nemOndalik())}")
+                    Text("RH %${(d.rh * 100).yaz(1)} · h ${b.birim(Buyukluk.ENTALPI).yazB(d.h, 1)}")
                     TextButton({ noktaEkle(d); balon = null }) { Text("Nokta ekle") }
                 }
             }

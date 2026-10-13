@@ -20,10 +20,11 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     var ad by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.ad ?: "P${vm.proje.noktalar.size + 1}") }
     var o1 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.o1 ?: Ozellik.KURU) }
     var o2 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.o2 ?: Ozellik.BAGIL) }
-    var v1 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: "") }
-    var v2 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: "") }
-    var debi by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(b.birim(Buyukluk.DEBI).goster(duzenlenen?.debi ?: 150.0).yaz(1)) }
-    LaunchedEffect(taslak) { taslak?.let { o1 = Ozellik.KURU; o2 = Ozellik.MUTLAK; v1 = b.ozellikBirimi(Ozellik.KURU).goster(it.t).yaz(1); v2 = b.ozellikBirimi(Ozellik.MUTLAK).goster(it.Wr).yaz(5); taslakKullanildi() } }
+    // birim değişince alanlar yeni birimde yeniden yazılır (eski metin yeni birimle yorumlanmasın)
+    var v1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: "") }
+    var v2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: "") }
+    var debi by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(b.birim(Buyukluk.DEBI).goster(duzenlenen?.debi ?: 150.0).yaz(1)) }
+    LaunchedEffect(taslak) { taslak?.let { o1 = Ozellik.KURU; o2 = Ozellik.MUTLAK; v1 = b.ozellikBirimi(Ozellik.KURU).goster(it.t).yaz(1); v2 = b.ozellikBirimi(Ozellik.MUTLAK).goster(it.Wr).yaz(b.nemOndalik()); taslakKullanildi() } }
 
     val si1 = v1.sayi()?.let { b.ozellikBirimi(o1).siye(it) }; val si2 = v2.sayi()?.let { b.ozellikBirimi(o2).siye(it) }
     val debiSi = debi.sayi()?.let { b.birim(Buyukluk.DEBI).siye(it) }
@@ -59,8 +60,8 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
         for (n in vm.proje.noktalar) {
             Card(Modifier.fillMaxWidth().clickable { vm.secili = if (vm.secili == n.ad) null else n.ad },
                 colors = CardDefaults.cardColors(containerColor = if (vm.secili == n.ad) Color(0xFFBBDEFB) else Color(0xFFF5F5F5))) {
-                Text("${n.ad}  ${n.o1.etiket} ${b.ozellikBirimi(n.o1).goster(n.v1).yaz(if (n.o1 == Ozellik.MUTLAK) 4 else 1)} ${b.ozellikBirimi(n.o1).etiket} · " +
-                    "${n.o2.etiket} ${b.ozellikBirimi(n.o2).goster(n.v2).yaz(if (n.o2 == Ozellik.MUTLAK) 4 else 1)} ${b.ozellikBirimi(n.o2).etiket}" +
+                Text("${n.ad}  ${n.o1.etiket} ${b.ozellikBirimi(n.o1).goster(n.v1).yaz(if (n.o1 == Ozellik.MUTLAK) b.nemOndalik() else 1)} ${b.ozellikBirimi(n.o1).etiket} · " +
+                    "${n.o2.etiket} ${b.ozellikBirimi(n.o2).goster(n.v2).yaz(if (n.o2 == Ozellik.MUTLAK) b.nemOndalik() else 1)} ${b.ozellikBirimi(n.o2).etiket}" +
                     (vm.hesap.noktaHatalari[n.ad]?.let { "  ⚠ $it" } ?: ""), Modifier.padding(8.dp), color = Color.Black)
             }
         }

@@ -18,6 +18,8 @@ enum class Buyukluk(val etiket: String, val secenekler: List<Birim>) {
 
 data class BirimSecimi(val secim: Map<Buyukluk, Int> = emptyMap()) {
     fun birim(b: Buyukluk) = b.secenekler[secim[b] ?: 0]
+    /** W gösterim hassasiyeti: g/kg'da 2, kg/kg'da 5 ondalık (ikisi de Wr çözünürlüğü). */
+    fun nemOndalik() = if (birim(Buyukluk.NEM).carpan > 1) 2 else 5
     fun ozellikBirimi(o: Ozellik) = when (o) {
         Ozellik.KURU, Ozellik.YAS -> birim(Buyukluk.SICAKLIK)
         Ozellik.MUTLAK -> birim(Buyukluk.NEM)

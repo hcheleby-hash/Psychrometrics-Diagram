@@ -36,6 +36,7 @@ private fun wEgrisi(tur: EgriTuru, deger: Double, p: Double, tMin: Double, tMax:
 }
 
 fun egrileriUret(p: Double, tMin: Double, tMax: Double, wMax: Double, turler: Set<EgriTuru>): List<Egri> {
+    if (!aralikGecerli(tMin, tMax, wMax)) return emptyList()
     val r = ArrayList<Egri>()
     val adimT = 5.0
     if (EgriTuru.KURU in turler) {

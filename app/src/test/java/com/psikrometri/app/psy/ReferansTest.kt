@@ -2,6 +2,7 @@ package com.psikrometri.app.psy
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 object Referans {
@@ -100,7 +101,7 @@ class ReferansTest {
 
     private fun senaryolar(rakim: Boolean) = Referans.yukle().getJSONArray("senaryolar").let { s ->
         (0 until s.length()).map { s.getJSONObject(it) }.filter { (it.getString("ad") == "ref_rakim") == rakim && it.getString("ad") != "ref_durum" }
-    }
+    }.also { assertTrue("senaryo listesi boş", it.isNotEmpty()) }
 
     @Test fun islemSenaryolari() { senaryolar(false).forEach(::senaryoKontrol) }
 

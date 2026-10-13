@@ -20,7 +20,10 @@ data class Proje(val rakim: Double = 0.0, val noktalar: List<Nokta> = emptyList(
         val sonuclar = islemler.map { i ->
             runCatching {
                 val girdi = i.girdiler.map { hava[it] ?: throw CozumHatasi("$it noktası yok") }
-                islemHesapla(i.tur, girdi, i.param).also { r -> i.ciktilar.forEachIndexed { k, ad -> hava[ad] = r.ciktilar[k] } }
+                val r = islemHesapla(i.tur, girdi, i.param)
+                if (r.ciktilar.size < i.ciktilar.size) throw CozumHatasi("İşlem beklenen çıktıları üretmedi")
+                i.ciktilar.zip(r.ciktilar).forEach { (ad, h) -> hava[ad] = h }
+                r
             }
         }
         return Hesap(hava, sonuclar, hatalar)
@@ -38,10 +41,17 @@ data class Proje(val rakim: Double = 0.0, val noktalar: List<Nokta> = emptyList(
             val o = JSONObject(s)
             fun JSONArray.str() = (0 until length()).map { getString(it) }
             fun JSONArray.dbl() = (0 until length()).map { getDouble(it) }
+            // sondaki eksik "ara çizgiler" seçeneği (ppp dönüştürücüsü yazmaz) varsayılan 1 ile tamamlanır
+            fun tamamla(tur: IslemTuru, p: List<Double>) = tur.parametreler.drop(p.size).let { e -> if (e.all { it == Parametre.ARA }) p + e.map { 1.0 } else p }
             val n = o.getJSONArray("noktalar"); val i = o.getJSONArray("islemler")
-            return Proje(o.getDouble("rakim"),
+            val p = Proje(o.getDouble("rakim"),
                 (0 until n.length()).map { n.getJSONObject(it) }.map { Nokta(it.getString("ad"), Ozellik.valueOf(it.getString("o1")), it.getDouble("v1"), Ozellik.valueOf(it.getString("o2")), it.getDouble("v2"), it.getDouble("debi"), it.getInt("renk")) },
-                (0 until i.length()).map { i.getJSONObject(it) }.map { Islem(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("girdiler").str(), it.getJSONArray("ciktilar").str(), it.getJSONArray("param").dbl(), it.getInt("renk")) })
+                (0 until i.length()).map { i.getJSONObject(it) }.map { Islem(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("girdiler").str(), it.getJSONArray("ciktilar").str(), tamamla(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("param").dbl()), it.getInt("renk")) })
+            for (isl in p.islemler) require(isl.girdiler.size == isl.tur.girdiSayisi && isl.ciktilar.size == isl.tur.ciktiSayisi && isl.param.size == isl.tur.parametreler.size) { "${isl.tur} sayıları uyuşmuyor" }
+            require(p.noktalar.all { it.debi > 0 }) { "debi > 0 olmalı" }
+            val adlar = p.noktalar.map { it.ad } + p.islemler.flatMap { it.ciktilar }
+            require(adlar.size == adlar.toSet().size) { "ad tekrarı" }
+            return p
         }
     }
 }
