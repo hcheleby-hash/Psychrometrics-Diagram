@@ -1,0 +1,34 @@
+package com.psikrometri.app.ui
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+
+fun String.sayi(): Double? = trim().replace(',', '.').toDoubleOrNull()
+fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(this).replace('.', ',')
+/** Giriş alanına geri yazmak için: 75.0 -> "75", 0.0 -> "0", 0.0123 -> "0,0123". */
+fun Double.kisa(): String = if (this == Math.rint(this)) toLong().toString() else "%.4f".format(java.util.Locale.ROOT, this).trimEnd('0').replace('.', ',')
+
+@Composable
+fun SayiAlani(deger: String, onDeger: (String) -> Unit, etiket: String, birim: String, modifier: Modifier = Modifier, hata: String? = null) {
+    OutlinedTextField(deger, onDeger, modifier, label = { Text(etiket) }, suffix = { Text(birim) }, singleLine = true,
+        isError = hata != null || (deger.isNotBlank() && deger.sayi() == null),
+        supportingText = hata?.let { { Text(it) } },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> SecimKutusu(secenekler: List<T>, secili: T, etiket: (T) -> String, onSec: (T) -> Unit, modifier: Modifier = Modifier, baslik: String = "") {
+    var acik by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(acik, { acik = it }, modifier) {
+        OutlinedTextField(etiket(secili), {}, readOnly = true, label = { Text(baslik) }, singleLine = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(acik) }, modifier = Modifier.menuAnchor())
+        ExposedDropdownMenu(acik, { acik = false }) {
+            secenekler.forEach { s -> DropdownMenuItem(text = { Text(etiket(s)) }, onClick = { onSec(s); acik = false }) }
+        }
+    }
+}
