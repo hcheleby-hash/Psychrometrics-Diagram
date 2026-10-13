@@ -80,6 +80,3 @@ private fun RakimDiyalog(vm: AnaVM, kapat: () -> Unit) {
 @Composable fun AyarDiyalog(vm: AnaVM, kapat: () -> Unit) { kapat() }
 class DosyaIslemleri(val ac: () -> Unit, val kaydet: () -> Unit, val rapor: () -> Unit)
 @Composable fun dosyaIslemleri(vm: AnaVM) = DosyaIslemleri({}, {}, {})
-@Composable fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) { Text("Noktalar") }
-@Composable fun IslemlerSekmesi(vm: AnaVM) { Text("İşlemler") }
-@Composable fun VeriSekmesi(vm: AnaVM) { Text("Veri") }
