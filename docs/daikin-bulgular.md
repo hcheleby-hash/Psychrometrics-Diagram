@@ -80,3 +80,12 @@ Referansla eşleşen tanımlar: Mix air kuru hava kütlesi (Q/v) ağırlıklı; 
 Kalan farklar (37 satır, çoğu 0,05 toleransın %0,1 ötesinde): `.superpowers/sdd/task-5-report.md`. ref_rakim'de Daikin altitude'u işlemlerden sonra değiştirdiği için türetilmiş noktalar (t, RH) korunarak yeniden hesaplanmış, kapasiteler deniz seviyesi değerinde kalmış; ref_islem'de X23–X40 Daikin'in varsayılan 25 °C/%50/100 l/s noktalarıdır (işlem çözülmemiş).
 - ref_islem placeholder nedeni: Cooling capacity N (30 °C/0,012, 3 kW, SHF 90) çözülemedi, Daikin sessizce düşürdü; sonraki işlem çıktı adları (X21+) kayıp kaldı ve raporda X23+ varsayılan nokta (25 °C, %50, 100 l/s) çıktı. Satır 1,5 kW'a çekilince (çıktı adları aynı) X21–X40 gerçek değer aldı. Çözülemeyen işlem = sessiz düşme + sonraki adlar bozulur; senaryolarda tüm işlemler çözülebilir olmalı.
 - Rakım değişince Daikin kullanıcı noktalarını yeniden hesaplar ama işlem çıktılarını (PP/X) HESAPLAMAZ (rapor eski kapasiteleri verir). Bir işlemi seçip Edit + Accept etmek tüm işlemleri yeniden hesaplatır; `referans_al.ps1` ref_rakim için bunu yapar (ör. Cooling A,E: 3,49 kW → 3,69 kW).
+
+### Task 5 kabul edilen bulgular (analiz: `.superpowers/sdd/task-5-analiz.md`)
+
+- m = 1,2·Q/1000 her yerde, 1500 m dahil (basınçtan bağımsız).
+- 7 Steam / 8 Water humidification / 11 Dehumidification: W2 = round(W1 ± (kg/h/3600)/m, 5) (0,01 g/kg); sulu/nem almada t yuvarlanmamış W'den, gösterilen W yuvarlanmış.
+- 10 Condensate: W1, W2 önce 5 haneye yuvarlanır, sonra T = m·Δh.
+- 4 Heating: hedef daha soğuksa uçlar yer değiştirir (test1.PP7); kW b'nin debisiyle, kg/h ilk noktanınkiyle.
+- Mix air: kuru hava kütlesi (Q/v) ağırlıklı.
+- Görev 6'ya ertelenen: 2 (td ≤ 0,005 °C), 5, 9, 12, 13, 14 (SHF doğrusu ailesi; ADP kökü SHF'ye bağlı ±0,01 °C). Discharge kapasitesi: T = m(1−BF)(h1−h_ADP), S = SHF·T.

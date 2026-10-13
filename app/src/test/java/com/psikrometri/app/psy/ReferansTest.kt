@@ -79,7 +79,7 @@ class ReferansTest {
         for (i in 0 until s.length()) {
             val sn = s.getJSONObject(i)
             if (sn.getString("ad") == "ref_durum" || sn.getString("ad") == "ref_shf") continue
-            val atla = setOf(12, 14)  // Task 6'da emptySet() olur
+            val atla = setOf(2, 5, 9, 12, 13, 14)  // Görev 6: SHF doğrusu ailesi + karışım td (bkz. .superpowers/sdd/task-5-analiz.md)
             val (hava, sonuc) = calistir(sn, atla)
             val isl = sn.getJSONArray("islemler")
             val atlanan = (0 until isl.length()).map { isl.getJSONObject(it) }.filter { it.getInt("kod") in atla }

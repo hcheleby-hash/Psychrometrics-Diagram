@@ -30,6 +30,9 @@ enum class IslemTuru(val daikinKod: Int, val etiket: String, val girdiSayisi: In
 
 fun kutle(debi: Double) = 1.2 * debi / 1000
 
+/** Daikin nem miktarlı işlemlerde W'yi 1e-5 kg/kg (0,01 g/kg) hassasiyetle taşır; tek m = 1,2·Q buna göre tutuyor. */
+private fun w5(W: Double) = Math.round(W * 1e5) / 1e5
+
 private fun sogutmaKapasitesi(m: Double, a: Durum, b: Durum) = Kapasite(
     toplam = m * (a.h - b.h), duyulur = m * cpm(b.W) * (a.t - b.t),
     gizli = m * (a.h - b.h) - m * cpm(b.W) * (a.t - b.t), shf = cpm(b.W) * (a.t - b.t) / (a.h - b.h) * 100)
@@ -88,13 +91,13 @@ fun islemHesapla(tur: IslemTuru, girdi: List<Hava>, param: List<Double>): IslemS
             IslemSonucu(listOf(hava(c)), listOf(Cizgi(a, c, false)), Kapasite(isitici = param[0]))
         }
         IslemTuru.BUHAR_NEM -> {
-            val kg = param[0] / 3600; val c = Durum(a.t, a.W + kg / m, p)
+            val kg = param[0] / 3600; val c = Durum(a.t, w5(a.W + kg / m), p)
             doymaKontrol(c, "Buharlı nemlendirme sonucu %100 nem eğrisini aşıyor. Miktarı azaltın.")
             IslemSonucu(listOf(hava(c)), listOf(Cizgi(a, c, false)), Kapasite(gizli = kg * (2501 + 1.84 * a.t), nemKgH = param[0]))
         }
         IslemTuru.SU_NEM, IslemTuru.NEM_ALMA -> {
             val kg = param[0] / 3600; val W = if (tur == IslemTuru.SU_NEM) a.W + kg / m else a.W - kg / m
-            val c = Durum(tEntalpidan(a.h, W), W, p)
+            val c = Durum(tEntalpidan(a.h, W), w5(W), p)  // t yuvarlanmamış W'den, gösterilen W yuvarlanmış
             doymaKontrol(c, if (tur == IslemTuru.SU_NEM) "Sulu nemlendirme sonucu diyagram dışında. Miktarı azaltın ya da buharlı nemlendirme kullanın." else "Nem alma sonucu nem oranı negatif. Miktarı azaltın.")
             IslemSonucu(listOf(hava(c)), listOf(Cizgi(a, c, false)), Kapasite(gizli = kg * 2501, nemKgH = param[0]))
         }
@@ -111,13 +114,13 @@ fun islemHesapla(tur: IslemTuru, girdi: List<Hava>, param: List<Double>): IslemS
         }
         IslemTuru.CIKIS -> {
             val shf = param[0] / 100; val adp = adpKapasite(a, shf); val bf = param[1] / 100
-            val tc = adp.t + bf * (a.t - adp.t); val duy = m * cpm(a.W) * (a.t - tc)
-            val c = sogutmaSonu(a, m, duy, duy / shf)
+            val top = m * (1 - bf) * (a.h - adp.h); val duy = shf * top
+            val c = sogutmaSonu(a, m, duy, top)
             IslemSonucu(listOf(hava(c), hava(adp)), listOf(Cizgi(a, c, false), Cizgi(c, adp, true)),
-                Kapasite(toplam = duy / shf, duyulur = duy, gizli = duy / shf - duy, cikisT = c.t, bypass = param[1]))
+                Kapasite(toplam = top, duyulur = duy, gizli = top - duy, cikisT = a.t - duy / (m * cpm(a.W)), bypass = param[1]))
         }
         IslemTuru.YOGUSMA -> {
-            val b = girdi[1].d
+            val b = Durum(girdi[1].d.t, w5(girdi[1].d.W), p); val a = Durum(a.t, w5(a.W), p)
             if (a.rh < 0.999 || b.rh < 0.999) throw CozumHatasi("Yoğuşma işlemi için iki nokta da %100 nem eğrisinde olmalı.")
             IslemSonucu(emptyList(), listOf(Cizgi(a, b, false)), sogutmaKapasitesi(m, a, b).copy(nemKgH = m * (a.W - b.W) * 3600))
         }
