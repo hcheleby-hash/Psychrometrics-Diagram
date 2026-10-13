@@ -13,6 +13,7 @@ Yoğunluk: ρ = (1 + W) / v (P1 27 °C / 0,0100 → 1,169 ✓).
 **`.ppp`** — UTF-16 LE (BOM), CRLF, alanlar boşlukla, ondalık virgül.
 
 - Nokta: `1 <ad> <özellik1> <değer1> <özellik2> <değer2> <debi l/s> <t önbellek> <RH% önbellek>`
+- ref_durum girdileri tam hassasiyetle yazıldı; Daikin önbellekten hesapladığı için rapor geçerli kaldı (yeniden koşturulmadı).
   - Özellik indeksleri: 0 kuru term., 1 mutlak nem, 2 bağıl nem, 3 entalpi, 4 yaş term., 5 özgül hacim, 6 yoğunluk
 - İşlem: `2 <renk BGR int> <tür> <girdiler...> <çıktılar...> <parametreler...>`
 - Türetilen PP noktaları dosyaya yazılmaz, açılışta hesaplanır.

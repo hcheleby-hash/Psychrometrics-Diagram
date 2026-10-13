@@ -28,10 +28,10 @@ def W_yas(t, tw, p):
 
 
 def yas_termometre(t, rh, p=101325.0):
-    """Kuru termometre t [°C] + bağıl nem rh [0-1] -> yaş termometre [°C]. Bisection, tolerans 1e-4."""
+    """Kuru termometre t [°C] + bağıl nem rh [0-1] -> yaş termometre [°C]. Bisection, tolerans 1e-10."""
     W = nem_orani(rh * pws(t), p)
     lo, hi = -100.0, t
-    while hi - lo > 1e-4:
+    while hi - lo > 1e-10:
         m = (lo + hi) / 2
         lo, hi = (m, hi) if W_yas(t, m, p) < W else (lo, m)
     return (lo + hi) / 2

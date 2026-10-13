@@ -11,7 +11,7 @@ def ozellikler(t, W):
     v = 287.0551882 * (t + 273.15) * (1 + 1.607774067 * W) / P
     return [t, W, pw / d.pws(t) * 100, d.entalpi(t, W), d.yas_termometre(t, pw / d.pws(t), P), v, (1 + W) / v]
 
-YUVARLA = [1, 4, 1, 1, 1, 3, 3]  # Daikin giriş hassasiyeti varsayımı; Daikin farklı yuvarlarsa raporda görünür
+YUVARLA = [12] * 7  # Daikin noktayı önbellek alanlarından (t, RH) hesaplar; girdiler tam hassasiyetle yazılır
 
 def nokta_ikili(ad, o1, o2, t, W, debi=150):
     oz = ozellikler(t, W)
