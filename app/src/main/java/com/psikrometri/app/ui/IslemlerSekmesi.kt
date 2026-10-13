@@ -29,14 +29,14 @@ fun IslemlerSekmesi(vm: AnaVM) {
     var tur by remember(duzenlenen) { mutableStateOf(duzenlenen?.tur ?: IslemTuru.KARISIM) }
     val noktaAdlari = vm.hesap.hava.keys.toList()
     val ayniTur = duzenlenen != null && tur == duzenlenen.tur
-    var girdiler by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.takeIf { ayniTur }?.girdiler ?: List(tur.girdiSayisi) { noktaAdlari.getOrElse(it) { "" } }) }
+    var girdiler by remember(duzenlenen, tur, noktaAdlari) { mutableStateOf(duzenlenen?.takeIf { ayniTur }?.girdiler ?: List(tur.girdiSayisi) { noktaAdlari.getOrElse(it) { "" } }) }
     val varsayilan = mapOf(Parametre.KW to "5", Parametre.SHF to "75", Parametre.KGH to "5", Parametre.BF to "10", Parametre.BUHAR to "1", Parametre.ARA to "1")
     var param by remember(duzenlenen, tur) { mutableStateOf(duzenlenen?.takeIf { ayniTur }?.param?.map { it.kisa() } ?: tur.parametreler.map { varsayilan.getValue(it) }) }
     var renk by remember(duzenlenen) { mutableStateOf(duzenlenen?.renk ?: RENKLER[0]) }
 
     fun islem(): Islem? {
         val p = param.map { it.sayi() ?: return null }
-        if (girdiler.any { it.isBlank() }) return null
+        if (girdiler.any { it !in noktaAdlari }) return null
         // çıktı adları mevcut nokta adlarıyla çakışmasın
         val kullanilan = vm.proje.noktalar.map { it.ad }.toSet()
         var n = vm.proje.yeniPPAdi().removePrefix("PP").toInt()

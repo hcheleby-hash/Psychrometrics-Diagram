@@ -40,28 +40,37 @@ fun dosyaIslemleri(vm: AnaVM): DosyaIslemleri {
         ac = { ac.launch(arrayOf("*/*")) },
         kaydet = { kaydet.launch("proje.psy") },
         rapor = {
+            runCatching {
             val f = File(ctx.cacheDir, "rapor/psikrometri.pdf").apply { parentFile!!.mkdirs() }
             f.outputStream().use { pdfYaz(it, vm.proje, vm.hesap, vm.egriler, vm.ayarlar) }
             val uri = FileProvider.getUriForFile(ctx, "com.psikrometri.app.dosya", f)
             ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("application/pdf").putExtra(Intent.EXTRA_STREAM, uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), "Raporu paylaş"))
+            }.onFailure { Toast.makeText(ctx, "Rapor oluşturulamadı: ${it.message}", Toast.LENGTH_LONG).show() }
         })
 }
 
 @Composable
 fun AyarDiyalog(vm: AnaVM, kapat: () -> Unit) {
     var a by remember { mutableStateOf(vm.ayarlar) }
-    var tMin by remember { mutableStateOf(a.tMin.yaz(0)) }; var tMax by remember { mutableStateOf(a.tMax.yaz(0)) }; var wMax by remember { mutableStateOf(a.wMax.yaz(3)) }
+    val tb = a.birimler.birim(Buyukluk.SICAKLIK); val nb = a.birimler.birim(Buyukluk.NEM)
+    var tMin by remember { mutableStateOf(tb.goster(a.tMin).yaz(0)) }; var tMax by remember { mutableStateOf(tb.goster(a.tMax).yaz(0)) }; var wMax by remember { mutableStateOf(nb.goster(a.wMax).yaz(3)) }
     AlertDialog(kapat, confirmButton = { TextButton({
-        vm.ayarDegistir(a.copy(tMin = tMin.sayi() ?: a.tMin, tMax = tMax.sayi() ?: a.tMax, wMax = wMax.sayi() ?: a.wMax)); kapat() }) { Text("Kaydet") } },
+        vm.ayarDegistir(a.copy(tMin = tMin.sayi()?.let { tb.siye(it) } ?: a.tMin, tMax = tMax.sayi()?.let { tb.siye(it) } ?: a.tMax, wMax = wMax.sayi()?.let { nb.siye(it) } ?: a.wMax)); kapat() }) { Text("Kaydet") } },
         dismissButton = { TextButton(kapat) { Text("Vazgeç") } }, title = { Text("Ayarlar") },
         text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             for (b in Buyukluk.entries) SecimKutusu(b.secenekler.indices.toList(), a.birimler.secim[b] ?: 0, { b.secenekler[it].etiket },
-                { i -> a = a.copy(birimler = BirimSecimi(a.birimler.secim + (b to i))) }, Modifier.fillMaxWidth(), b.name.lowercase().replaceFirstChar { it.uppercase() })
+                { i ->
+                    val eski = a.birimler.birim(b); val yeni = b.secenekler[i]
+                    fun donustur(t: String, d: Int) = t.sayi()?.let { yeni.goster(eski.siye(it)).yaz(d) } ?: t
+                    if (b == Buyukluk.SICAKLIK) { tMin = donustur(tMin, 0); tMax = donustur(tMax, 0) }
+                    if (b == Buyukluk.NEM) wMax = donustur(wMax, 3)
+                    a = a.copy(birimler = BirimSecimi(a.birimler.secim + (b to i)))
+                }, Modifier.fillMaxWidth(), b.etiket)
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                SayiAlani(tMin, { tMin = it }, "t min", "°C", Modifier.weight(1f)); SayiAlani(tMax, { tMax = it }, "t max", "°C", Modifier.weight(1f))
+                SayiAlani(tMin, { tMin = it }, "t min", tb.etiket, Modifier.weight(1f)); SayiAlani(tMax, { tMax = it }, "t max", tb.etiket, Modifier.weight(1f))
             }
-            SayiAlani(wMax, { wMax = it }, "W max", "kg/kg", Modifier.fillMaxWidth())
+            SayiAlani(wMax, { wMax = it }, "W max", nb.etiket, Modifier.fillMaxWidth())
             for (e in EgriTuru.entries) Row { Checkbox(e in a.egriler, { c -> a = a.copy(egriler = if (c) a.egriler + e else a.egriler - e) }); Text(e.etiket, Modifier.padding(top = 12.dp)) }
         } })
 }

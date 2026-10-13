@@ -21,15 +21,18 @@ fun pdfYaz(cikti: OutputStream, proje: Proje, hesap: Hesap, egriler: List<Egri>,
     fun satir(s: String, p: Paint = yazi) { if (y > 800) { pdf.finishPage(sayfa); yeniSayfa() }; sayfa.canvas.drawText(s, 40f, y, p); y += 15f }
     yeniSayfa()
     satir("Psikrometri raporu — rakım ${proje.rakim.yaz(0)} m, basınç ${(proje.basinc / 1000).yaz(3)} kPa", kalin)
-    satir("Nokta   t °C twb °C  td °C  RH %   W kg/kg  h kJ/kg ρ kg/m³ v m³/kg debi l/s", kalin)
+    val sutunlar = listOf("Nokta" to 6, "t °C" to 6, "twb °C" to 7, "td °C" to 6, "RH %" to 6, "W kg/kg" to 9, "h kJ/kg" to 8, "ρ kg/m³" to 7, "v m³/kg" to 7, "debi l/s" to 8)
+    fun hizala(v: List<String>) = v.zip(sutunlar).mapIndexed { i, (s, c) -> if (i == 0) s.padEnd(c.second) else s.padStart(c.second) }.joinToString(" ")
+    satir(hizala(sutunlar.map { it.first }), kalin)
     for ((ad, hv) in hesap.hava) {
         val d = hv.d
-        satir("%-6s %6s %7s %6s %6s %9s %8s %7s %7s %8s".format(ad, d.t.yaz(1), d.twb.yaz(1), d.td.yaz(1), (d.rh * 100).yaz(1), d.Wr.yaz(5), d.h.yaz(1), d.rho.yaz(3), d.v.yaz(3), hv.debi.yaz(1)))
+        satir(hizala(listOf(ad, d.t.yaz(1), d.twb.yaz(1), d.td.yaz(1), (d.rh * 100).yaz(1), d.Wr.yaz(5), d.h.yaz(1), d.rho.yaz(3), d.v.yaz(3), hv.debi.yaz(1))))
     }
+    fun sar(s: String) { var k = s; var ek = ""; while (k.isNotEmpty()) { val n = yazi.breakText(ek + k, true, 515f, null) - ek.length; satir(ek + k.take(n.coerceAtLeast(1))); k = k.drop(n.coerceAtLeast(1)).trimStart(); ek = "    " } }
     y += 10f; satir("İşlemler", kalin)
     proje.islemler.forEachIndexed { i, isl ->
-        satir("${isl.tur.etiket}: ${(isl.girdiler + isl.ciktilar).joinToString(", ")}")
-        hesap.sonuclar[i].fold({ satir("    " + it.kapasite.metin()) }, { satir("    Hata: ${it.message}") })
+        sar("${isl.tur.etiket}: ${(isl.girdiler + isl.ciktilar).joinToString(", ")}")
+        hesap.sonuclar[i].fold({ sar("    " + it.kapasite.metin()) }, { sar("    Hata: ${it.message}") })
     }
     pdf.finishPage(sayfa)
     pdf.writeTo(cikti); pdf.close()
