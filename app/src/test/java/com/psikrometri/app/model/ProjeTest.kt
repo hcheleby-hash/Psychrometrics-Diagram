@@ -1,6 +1,7 @@
 package com.psikrometri.app.model
 
 import com.psikrometri.app.psy.IslemTuru
+import com.psikrometri.app.psy.cpm
 import com.psikrometri.app.psy.Ozellik
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -19,7 +20,8 @@ class ProjeTest {
         val h = proje.hesapla()
         assertEquals(20.9, h.hava.getValue("PP1").d.t, 0.05)
         assertEquals(300.0, h.hava.getValue("PP1").debi, 1e-9)
-        assertEquals(20.9 + 5 / (0.36 * 1.0166), h.hava.getValue("PP2").d.t, 0.15)  // m = 1,2·300/1000
+        val pp1 = h.hava.getValue("PP1").d
+        assertEquals(pp1.t + 5 / (0.36 * cpm(pp1.W)), h.hava.getValue("PP2").d.t, 1e-6)  // m = 1,2·300/1000
         assertTrue(h.sonuclar[2].isFailure)
     }
 
