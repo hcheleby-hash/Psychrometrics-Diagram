@@ -18,8 +18,8 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     val b = vm.ayarlar.birimler
     val duzenlenen = vm.proje.noktalar.firstOrNull { it.ad == vm.secili }
     var ad by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.ad ?: "P${vm.proje.noktalar.size + 1}") }
-    var o1 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.o1 ?: Ozellik.KURU) }
-    var o2 by remember(duzenlenen, vm.proje.noktalar.size) { mutableStateOf(duzenlenen?.o2 ?: Ozellik.BAGIL) }
+    var o1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.o1 ?: Ozellik.KURU) }
+    var o2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.o2 ?: Ozellik.BAGIL) }
     // birim değişince alanlar yeni birimde yeniden yazılır (eski metin yeni birimle yorumlanmasın)
     var v1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: "") }
     var v2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: "") }

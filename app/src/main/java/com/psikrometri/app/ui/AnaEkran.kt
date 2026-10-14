@@ -1,6 +1,7 @@
 package com.psikrometri.app.ui
 
 import android.content.res.Configuration
+import com.psikrometri.app.model.RAKIM_ARALIK
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -75,7 +76,7 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
 private fun RakimDiyalog(vm: AnaVM, kapat: () -> Unit) {
     var rakim by remember { mutableStateOf(vm.proje.rakim.yaz(0)) }
     var basinc by remember { mutableStateOf((vm.proje.basinc / 1000).yaz(3)) }
-    val z = rakim.sayi()?.takeIf { it in -500.0..10000.0 }
+    val z = rakim.sayi()?.takeIf { it in RAKIM_ARALIK }
     AlertDialog(kapat, confirmButton = { TextButton({ vm.proje = vm.proje.copy(rakim = z!!); kapat() }, enabled = z != null) { Text("Tamam") } },
         title = { Text("Rakım / basınç") }, text = { Column {
             SayiAlani(rakim, { rakim = it; it.sayi()?.let { z -> basinc = (com.psikrometri.app.psy.basincRakimdan(z) / 1000).yaz(3) } }, "Rakım", "m",

@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.psikrometri.app.model.Birim
 
-fun String.sayi(): Double? = trim().replace(',', '.').toDoubleOrNull()
+fun String.sayi(): Double? = trim().replace(',', '.').toDoubleOrNull()?.takeIf { it.isFinite() }
 fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(java.util.Locale.ROOT, this).replace('.', ',')
 /** Giriş alanına geri yazmak için: 75.0 -> "75", 0.0 -> "0", 0.0123 -> "0,0123". */
 fun Birim.yazB(si: Double, ondalik: Int) = "${goster(si).yaz(ondalik)} $etiket"

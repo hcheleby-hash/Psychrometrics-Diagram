@@ -48,4 +48,11 @@ class ProjeTest {
         assertTrue("ad tekrarı", bozuk { it.getJSONArray("noktalar").getJSONObject(1).put("ad", "P1") }.isFailure)
         assertTrue("çıktı nokta adıyla çakışıyor", bozuk { isl(it, 0).put("ciktilar", org.json.JSONArray(listOf("P2"))) }.isFailure)
     }
+
+    @Test fun sonluOlmayanVeAralikDisiReddedilir() {
+        val tmp = Proje(noktalar = listOf(Nokta("P1", Ozellik.KURU, 27.0, Ozellik.MUTLAK, 0.010, 150.0))).json()
+        assertTrue(Proje.jsonOku(tmp).noktalar.size == 1)
+        assertTrue(runCatching { Proje.jsonOku(tmp.replace("\"v1\": 27", "\"v1\": \"NaN\"")) }.isFailure)
+        assertTrue(runCatching { Proje.jsonOku(tmp.replace("\"rakim\": 0", "\"rakim\": 20000")) }.isFailure)
+    }
 }

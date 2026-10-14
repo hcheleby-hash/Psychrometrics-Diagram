@@ -39,7 +39,7 @@ fun IslemlerSekmesi(vm: AnaVM) {
     val varsayilan = mapOf(Parametre.KW to 5.0, Parametre.SHF to 75.0, Parametre.KGH to 5.0, Parametre.BF to 10.0, Parametre.BUHAR to 1.0, Parametre.ARA to 1.0)
     // kapasite parametresi seçili güç biriminde girilir, SI (kW) saklanır
     var param by remember(duzenlenen, tur, gb) { mutableStateOf((duzenlenen?.takeIf { ayniTur }?.param ?: tur.parametreler.map { varsayilan.getValue(it) })
-        .mapIndexed { k, v -> (if (tur.parametreler[k] == Parametre.KW) gb.goster(v) else v).kisa() }) }
+        .mapIndexed { k, v -> (if (tur.parametreler[k] == Parametre.KW) Math.round(gb.goster(v) * 10) / 10.0 else v).kisa() }) }
     var renk by remember(duzenlenen) { mutableStateOf(duzenlenen?.renk ?: RENKLER[0]) }
 
     fun islem(): Islem? {

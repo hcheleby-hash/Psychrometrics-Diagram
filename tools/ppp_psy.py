@@ -11,6 +11,7 @@ def renk(bgr):  # Daikin BGR int -> Android ARGB (işaretli int)
     return (0xFF000000 | r << 16 | g << 8 | b) - (1 << 32)
 
 def param(kod, p):  # Daikin parametre sırası -> IslemTuru.parametreler sırası (ReferansTest.parametreSirasi ile aynı)
+    if kod == 3: return [p[0] if p else 1.0]
     if kod == 4: return [p[0], p[1] if len(p) > 1 else 1.0]
     if kod == 5: return [p[0], p[1], p[2] if len(p) > 2 else 1.0]
     if kod == 9: return [p[1], p[2] if len(p) > 2 else 1.0]

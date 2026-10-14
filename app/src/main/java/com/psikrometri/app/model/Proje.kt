@@ -4,6 +4,7 @@ import com.psikrometri.app.psy.*
 import org.json.JSONArray
 import org.json.JSONObject
 
+val RAKIM_ARALIK = -500.0..10000.0
 const val MAVI = 0xFF1565C0.toInt()
 val RENKLER = listOf(MAVI, 0xFFC62828.toInt(), 0xFF2E7D32.toInt(), 0xFFEF6C00.toInt(), 0xFF6A1B9A.toInt(), 0xFF00838F.toInt(), 0xFF4E342E.toInt(), 0xFF212121.toInt())
 
@@ -41,13 +42,13 @@ data class Proje(val rakim: Double = 0.0, val noktalar: List<Nokta> = emptyList(
             val o = JSONObject(s)
             fun JSONArray.str() = (0 until length()).map { getString(it) }
             fun JSONArray.dbl() = (0 until length()).map { getDouble(it) }
-            // sondaki eksik "ara çizgiler" seçeneği (ppp dönüştürücüsü yazmaz) varsayılan 1 ile tamamlanır
-            fun tamamla(tur: IslemTuru, p: List<Double>) = tur.parametreler.drop(p.size).let { e -> if (e.all { it == Parametre.ARA }) p + e.map { 1.0 } else p }
             val n = o.getJSONArray("noktalar"); val i = o.getJSONArray("islemler")
             val p = Proje(o.getDouble("rakim"),
                 (0 until n.length()).map { n.getJSONObject(it) }.map { Nokta(it.getString("ad"), Ozellik.valueOf(it.getString("o1")), it.getDouble("v1"), Ozellik.valueOf(it.getString("o2")), it.getDouble("v2"), it.getDouble("debi"), it.getInt("renk")) },
-                (0 until i.length()).map { i.getJSONObject(it) }.map { Islem(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("girdiler").str(), it.getJSONArray("ciktilar").str(), tamamla(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("param").dbl()), it.getInt("renk")) })
+                (0 until i.length()).map { i.getJSONObject(it) }.map { Islem(IslemTuru.valueOf(it.getString("tur")), it.getJSONArray("girdiler").str(), it.getJSONArray("ciktilar").str(), it.getJSONArray("param").dbl(), it.getInt("renk")) })
             for (isl in p.islemler) require(isl.girdiler.size == isl.tur.girdiSayisi && isl.ciktilar.size == isl.tur.ciktiSayisi && isl.param.size == isl.tur.parametreler.size) { "${isl.tur} sayıları uyuşmuyor" }
+            require(p.rakim in RAKIM_ARALIK) { "rakım aralık dışı" }
+            require(p.noktalar.all { it.v1.isFinite() && it.v2.isFinite() && it.debi.isFinite() } && p.islemler.all { i -> i.param.all { it.isFinite() } }) { "sayı sonlu olmalı" }
             require(p.noktalar.all { it.debi > 0 }) { "debi > 0 olmalı" }
             val adlar = p.noktalar.map { it.ad } + p.islemler.flatMap { it.ciktilar }
             require(adlar.size == adlar.toSet().size) { "ad tekrarı" }
