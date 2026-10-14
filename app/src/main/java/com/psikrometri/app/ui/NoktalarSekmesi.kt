@@ -21,8 +21,11 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     var o1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.o1 ?: Ozellik.KURU) }
     var o2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.o2 ?: Ozellik.BAGIL) }
     // birim değişince alanlar yeni birimde yeniden yazılır (eski metin yeni birimle yorumlanmasın)
-    var v1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: "") }
-    var v2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: "") }
+    // varsayılan: 25 °C %50; özellik değişince alan mevcut noktanın o özelliğiyle dolar (nokta yerinde kalır)
+    val ref = Durum(25.0, nemOrani(0.5 * pws(25.0), vm.proje.basinc), vm.proje.basinc)
+    fun yazO(o: Ozellik, d: Durum) = b.ozellikBirimi(o).goster(d.deger(o)).yaz(when (o) { Ozellik.MUTLAK -> b.nemOndalik(); Ozellik.HACIM, Ozellik.YOGUNLUK -> 3; else -> 1 })
+    var v1 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o1).goster(it.v1).kisa() } ?: yazO(o1, ref)) }
+    var v2 by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(duzenlenen?.let { b.ozellikBirimi(it.o2).goster(it.v2).kisa() } ?: yazO(o2, ref)) }
     var debi by remember(duzenlenen, vm.proje.noktalar.size, b) { mutableStateOf(b.birim(Buyukluk.DEBI).goster(duzenlenen?.debi ?: 150.0).yaz(1)) }
     LaunchedEffect(taslak) { taslak?.let { o1 = Ozellik.KURU; o2 = Ozellik.MUTLAK; v1 = b.ozellikBirimi(Ozellik.KURU).goster(it.t).yaz(1); v2 = b.ozellikBirimi(Ozellik.MUTLAK).goster(it.Wr).yaz(b.nemOndalik()); taslakKullanildi() } }
 
@@ -38,7 +41,7 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
 
     Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         OutlinedTextField(ad, { ad = it }, label = { Text("Nokta adı") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        for ((o, setO, v, setV) in listOf(Quad(o1, { x: Ozellik -> o1 = x }, v1, { x: String -> v1 = x }), Quad(o2, { x: Ozellik -> o2 = x }, v2, { x: String -> v2 = x })))
+        for ((o, setO, v, setV) in listOf(Quad(o1, { x: Ozellik -> v1 = yazO(x, sonuc?.getOrNull() ?: ref); o1 = x }, v1, { x: String -> v1 = x }), Quad(o2, { x: Ozellik -> v2 = yazO(x, sonuc?.getOrNull() ?: ref); o2 = x }, v2, { x: String -> v2 = x })))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 SecimKutusu(Ozellik.entries, o, { it.etiket }, setO, Modifier.weight(1.2f))
                 SayiAlani(v, setV, "Değer", b.ozellikBirimi(o).etiket, Modifier.weight(1f))

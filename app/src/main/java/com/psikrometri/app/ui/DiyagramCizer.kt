@@ -79,9 +79,9 @@ fun egrileriUret(p: Double, tMin: Double, tMax: Double, wMax: Double, turler: Se
     return r
 }
 
-private val RENK_EGRI = mapOf(
+val RENK_EGRI = mapOf(
     EgriTuru.KURU to 0xFFB0B0B0.toInt(), EgriTuru.MUTLAK to 0xFFB0B0B0.toInt(), EgriTuru.BAGIL to 0xFF29A3E0.toInt(),
-    EgriTuru.ENTALPI to 0xFFE66A1F.toInt(), EgriTuru.YAS to 0xFF7FC8F0.toInt(), EgriTuru.HACIM to 0xFFF2C6A8.toInt(), EgriTuru.YOGUNLUK to 0xFFC8C8C8.toInt())
+    EgriTuru.ENTALPI to 0xFFE66A1F.toInt(), EgriTuru.YAS to 0xFF7FC8F0.toInt(), EgriTuru.HACIM to 0xFFF2C6A8.toInt(), EgriTuru.YOGUNLUK to 0xFF8BC34A.toInt())
 
 fun cizDiyagram(c: Canvas, e: Eksen, p: Double, egriler: List<Egri>, hesap: Hesap, proje: Proje, secili: String?, onizleme: Durum?, birim: BirimSecimi) {
     val ince = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1.2f }

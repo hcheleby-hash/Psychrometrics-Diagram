@@ -60,8 +60,8 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
                 }
             }
             else Column(Modifier.padding(ic).fillMaxSize()) {
-                Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
                 Column(Modifier.weight(0.55f).fillMaxWidth(), content = sekmeler)
+                Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
             }
         }
         if (rakimAcik) RakimDiyalog(vm) { rakimAcik = false }

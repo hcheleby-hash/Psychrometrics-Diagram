@@ -1,6 +1,10 @@
 package com.psikrometri.app.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
@@ -20,6 +24,7 @@ import com.psikrometri.app.model.Buyukluk
 import com.psikrometri.app.psy.Durum
 import com.psikrometri.app.psy.doymaW
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
     var olcek by remember { mutableFloatStateOf(1f) }
@@ -29,7 +34,8 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
     fun eksen() = Eksen(vm.ayarlar.tMin, vm.ayarlar.tMax, vm.ayarlar.wMax, 24f, 8f, boyut.width - 106f, boyut.height - 44f)
     fun ekrandanVeriye(o: Offset) = (o - kayma) / olcek
     val yog = LocalDensity.current.density
-    Box(modifier) {
+    Column(modifier) {
+    Box(Modifier.weight(1f).fillMaxWidth()) {
         Canvas(Modifier.fillMaxSize().clipToBounds()
             .onSizeChanged { boyut = androidx.compose.ui.geometry.Size(it.width.toFloat(), it.height.toFloat()) }
             .pointerInput(Unit) { detectTransformGestures { merkez, kay, zoom, _ ->
@@ -61,4 +67,17 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
             }
         }
     }
+    // renk açıklaması + aç/kapat (ayarlardaki eğri seçimiyle aynı)
+    FlowRow(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        val a = vm.ayarlar
+        EgriTuru.entries.forEach { e ->
+            Row(Modifier.toggleable(e in a.egriler) { c -> vm.ayarDegistir(a.copy(egriler = if (c) a.egriler + e else a.egriler - e)) }
+                .padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) { Checkbox(e in a.egriler, null, Modifier.size(28.dp)) }
+                Box(Modifier.size(14.dp, 3.dp).background(Color(RENK_EGRI.getValue(e))))
+                Text(" " + e.etiket, style = MaterialTheme.typography.labelSmall)
+            }
+        }
+    }
+}
 }
