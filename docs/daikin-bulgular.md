@@ -58,7 +58,7 @@ Toplam = m·(h_a − h_b); duyulur = m·cpm(W_b)·(t_a − t_b); gizli = toplam 
 | Cooling capacity | ✓ exe 0x9b3b34: t2 = t1 − SHF·kW/(cpm(W1r)·1,2·Q), W2 = W1r − (1−SHF)·kW/(2500·Q·ρ_kuru(t1)), ρ_kuru = p/(R_da·(t1+273,15)), Q m³/s; W2 ≤ 0 ya da RH2 > 100 hata; PP2 = (t1, round5(W2)) | ✓ (Görev 6) |
 | Cool to saturation | ✓ exe 0x9b40a4: tx = td(W1r)'den 5 °C adımla aşağı; Wx = round5(Ws(tx)); T = 1,2·Q·\|hx − h1\|; oran = cpm(Wx)·1,2·Q·\|t1 − tx\|/T; oran < SHF ise geri dön ve adımı yarıla; \|SHF − oran\| ≤ 1e-4 (ya da adım < 1e-10) dur; tx ≤ −40 ya da Wx ≤ 0 hata. Kapasite: T (son hesaplanan), S = SHF·T, L = T − S | ✓ (Görev 6) |
 | Discharge | ✓ ADP ve T_ADP Cool to saturation'dan; T = T_ADP − BF·T_ADP; PP1 = T kW'lık Cooling capacity sonu, PP2 = ADP; S = SHF·T; Discharge = t(PP1) | ✓ (Görev 6) |
-| Condensate | iki nokta da RH=100 olmalı; kapasite + nem alma kg/h | kg/h'te ~%1 fark — referans testte çözülecek |
+| Condensate | iki nokta da RH=100 olmalı; kapasite + nem alma kg/h | ✓ W1, W2 önce 5 haneye yuvarlanır (Görev 5) |
 | Sensible heat factor | ✓ exe 0x9b4384: Cooling capacity doğrusu (Q = 0,1 m³/s sabit), kapasite 0'dan 1 kW adımla artar; RH > 100 ya da W ≤ 0 olunca adım geri alınır ve /10; adım < 1e-4'te biter. RH > 100 adımında nokta yazılır (gösterimde W doymaya kırpılır), W ≤ 0 adımında yazılmaz. Cool to saturation'dan farklı: o h-tabanlı oranla ADP arar | ✓ ref_shf 32/32 (Görev 6) |
 | Bypass factor | ✓ PP1 = Cooling capacity sonu; PP2 = exe 0x9b3d30: aynı doğruda gerçek Q ile kapasite kW'tan doymaya (RH düşerse ya da W ≤ 0 hata); BF = 100 − kW/T_doyma·100; Discharge = t(PP1) | ✓ (Görev 6) |
 | Connect / Show point | sadece çizim | ✓ |
@@ -88,7 +88,7 @@ Kalan farklar (37 satır, çoğu 0,05 toleransın %0,1 ötesinde): `.superpowers
 - 10 Condensate: W1, W2 önce 5 haneye yuvarlanır, sonra T = m·Δh.
 - 4 Heating: hedef daha soğuksa uçlar yer değiştirir (test1.PP7); kW b'nin debisiyle, kg/h ilk noktanınkiyle.
 - Mix air: kuru hava kütlesi (Q/v) ağırlıklı.
-- Görev 6'ya ertelenen: 2 (td ≤ 0,005 °C), 5, 9, 12, 13, 14 (SHF doğrusu ailesi; ADP kökü SHF'ye bağlı ±0,01 °C). Discharge kapasitesi: T = m(1−BF)(h1−h_ADP), S = SHF·T.
+- (Görev 6'da exe'den çözüldü, aşağıdaki bölüme bakın) Görev 5'te ertelenen: 2 (td ≤ 0,005 °C), 5, 9, 12, 13, 14 (SHF doğrusu ailesi; ADP kökü SHF'ye bağlı ±0,01 °C). Discharge kapasitesi: T = m(1−BF)(h1−h_ADP), S = SHF·T.
 
 ### Görev 6 — exe disassembly ile kesinleşen tanımlar
 
@@ -100,3 +100,8 @@ Kaynak: `Desktop\psychrometrics.exe` (capstone ile; VA = dosya ofseti + 0x400C00
 - **Durum çözücüleri:** 0x843660 vb. 10'dan 5'e bölünen adımlı tarama, tolerans 1e-6/1e-4; ref_durum'da fark görülmedi.
 - **test4 artefaktı:** Daikin bir işlem hata verince (Cool to saturation 50/60 % kök yok) **hemen sonraki işlemin** çıktıları varsayılan nokta (25 °C, %50, 100 l/s) olur ve kapasitesi yazılmaz (S2, S3, S6). ReferansTest bunu taklit eder; uygulama taklit etmez.
 
+
+## Son durum (1.0)
+
+- 15 işlemin hepsi ve 1500 m senaryosu Daikin referansıyla gösterilen hassasiyette birebir (`ReferansTest`); `test1.ppp` uygulamanın proje yolundan (`jsonOku` → `hesapla`) 14 nokta + 11 kapasite 0 fark (`ProjeKabulTest`, dönüştürücü `tools/ppp_psy.py`).
+- Bilinen farklar: Daikin başarısız işlemden sonraki çıktılara varsayılan nokta (25 °C / %50 / 100 l/s) yazar — uygulama yazmaz, hata gösterir (yalnız `ReferansTest` taklit eder). Daikin sıcaklığı ±80 °C'ye kırpar; uygulama kırpmaz (80 °C üstü ısıtmada fark olabilir).
