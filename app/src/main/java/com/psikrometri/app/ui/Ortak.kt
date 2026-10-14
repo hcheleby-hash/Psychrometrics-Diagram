@@ -6,14 +6,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.psikrometri.app.model.Birim
+import com.psikrometri.app.model.ondalikAyrac
 
 fun String.sayi(): Double? = trim().replace(',', '.').toDoubleOrNull()?.takeIf { it.isFinite() }
-fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(java.util.Locale.ROOT, this).replace('.', ',')
+fun Double.yaz(ondalik: Int): String = if (isNaN()) "–" else "%.${ondalik}f".format(java.util.Locale.ROOT, this).replace('.', ondalikAyrac)
 /** Giriş alanına geri yazmak için: 75.0 -> "75", 0.0 -> "0", 0.0123 -> "0,0123". */
 fun Birim.yazB(si: Double, ondalik: Int) = "${goster(si).yaz(ondalik)} $etiket"
 /** Fark gösterimi: ofset uygulanmaz (Δ°F = 1,8·Δ°C). */
 fun Birim.farkYaz(dsi: Double, ondalik: Int) = "${(dsi * carpan).yaz(ondalik)} $etiket"
-fun Double.kisa(): String = if (this == Math.rint(this)) toLong().toString() else "%.4f".format(java.util.Locale.ROOT, this).trimEnd('0').replace('.', ',')
+fun Double.kisa(): String = if (this == Math.rint(this)) toLong().toString() else "%.4f".format(java.util.Locale.ROOT, this).trimEnd('0').replace('.', ondalikAyrac)
 
 @Composable
 fun SayiAlani(deger: String, onDeger: (String) -> Unit, etiket: String, birim: String, modifier: Modifier = Modifier, hata: String? = null) {

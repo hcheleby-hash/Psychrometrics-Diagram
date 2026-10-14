@@ -1,5 +1,6 @@
 package com.psikrometri.app.psy
 
+import com.psikrometri.app.model.c
 import kotlin.math.abs
 
 data class Hava(val d: Durum, val debi: Double)
@@ -8,11 +9,12 @@ data class Kapasite(val toplam: Double? = null, val duyulur: Double? = null, val
 data class Cizgi(val a: Durum, val b: Durum, val kesikli: Boolean)
 data class IslemSonucu(val ciktilar: List<Hava>, val cizgiler: List<Cizgi>, val kapasite: Kapasite)
 
-enum class Parametre(val etiket: String, val birim: String) {
-    KW("Kapasite", "kW"), SHF("SHF", "%"), KGH("Miktar", "kg/h"), BF("Bypass faktörü", "%"), BUHAR("Buharlı", ""), ARA("Ara çizgiler", "")
+enum class Parametre(private val tr: String, val birim: String) {
+    KW("Kapasite", "kW"), SHF("SHF", "%"), KGH("Miktar", "kg/h"), BF("Bypass faktörü", "%"), BUHAR("Buharlı", ""), ARA("Ara çizgiler", "");
+    val etiket get() = tr.c()
 }
 
-enum class IslemTuru(val daikinKod: Int, val etiket: String, val girdiSayisi: Int, val ciktiSayisi: Int, val parametreler: List<Parametre>) {
+enum class IslemTuru(val daikinKod: Int, private val tr: String, val girdiSayisi: Int, val ciktiSayisi: Int, val parametreler: List<Parametre>) {
     NOKTA_GOSTER(0, "Noktayı göster", 1, 0, emptyList()),
     BAGLA(1, "Bağla", 2, 0, emptyList()),
     KARISIM(2, "Hava karışımı", 2, 1, emptyList()),
@@ -27,7 +29,8 @@ enum class IslemTuru(val daikinKod: Int, val etiket: String, val girdiSayisi: In
     NEM_ALMA(11, "Nem alma", 1, 1, listOf(Parametre.KGH)),
     BYPASS(12, "Bypass faktörü", 1, 2, listOf(Parametre.KW, Parametre.SHF)),
     CIKIS(13, "Üfleme (discharge)", 1, 2, listOf(Parametre.SHF, Parametre.BF)),
-    SHF(14, "Duyulur ısı faktörü", 1, 1, listOf(Parametre.SHF)),
+    SHF(14, "Duyulur ısı faktörü", 1, 1, listOf(Parametre.SHF));
+    val etiket get() = tr.c()
 }
 
 fun kutle(debi: Double) = 1.2 * debi / 1000

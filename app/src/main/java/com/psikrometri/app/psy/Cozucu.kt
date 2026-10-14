@@ -1,11 +1,14 @@
 package com.psikrometri.app.psy
 
-enum class Ozellik(val daikinKod: Int, val etiket: String) {
+import com.psikrometri.app.model.c
+
+enum class Ozellik(val daikinKod: Int, private val tr: String) {
     KURU(0, "Kuru termometre"), MUTLAK(1, "Mutlak nem"), BAGIL(2, "Bağıl nem"), ENTALPI(3, "Entalpi"),
-    YAS(4, "Yaş termometre"), HACIM(5, "Özgül hacim"), YOGUNLUK(6, "Yoğunluk")
+    YAS(4, "Yaş termometre"), HACIM(5, "Özgül hacim"), YOGUNLUK(6, "Yoğunluk");
+    val etiket get() = tr.c()
 }
 
-class CozumHatasi(mesaj: String) : Exception(mesaj)
+class CozumHatasi(mesaj: String) : Exception(mesaj.c())
 
 /** Çözücü için yuvarlanmamış değerler (Durum.h/twb Daikin gösterimi gibi Wr kullanır). */
 fun Durum.deger(o: Ozellik) = when (o) {

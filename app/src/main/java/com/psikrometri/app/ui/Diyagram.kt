@@ -21,6 +21,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.psikrometri.app.model.Buyukluk
+import com.psikrometri.app.model.c
+import com.psikrometri.app.model.yuzde
 import com.psikrometri.app.psy.Durum
 import com.psikrometri.app.psy.doymaW
 
@@ -31,7 +33,7 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
     var kayma by remember { mutableStateOf(Offset.Zero) }
     var balon by remember { mutableStateOf<Pair<Offset, Durum>?>(null) }
     var boyut by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
-    fun eksen() = Eksen(vm.ayarlar.tMin, vm.ayarlar.tMax, vm.ayarlar.wMax, 24f, 8f, boyut.width - 106f, boyut.height - 44f)
+    fun eksen() = Eksen(vm.ayarlar.tMin, vm.ayarlar.tMax, vm.ayarlar.wMax, 24f, 46f, boyut.width - 106f, boyut.height - 108f)
     fun ekrandanVeriye(o: Offset) = (o - kayma) / olcek
     val yog = LocalDensity.current.density
     Column(modifier) {
@@ -61,8 +63,8 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
                 Column(Modifier.padding(8.dp)) {
                     val b = vm.ayarlar.birimler
                     Text("t ${b.birim(Buyukluk.SICAKLIK).yazB(d.t, 1)} · W ${b.birim(Buyukluk.NEM).yazB(d.Wr, b.nemOndalik())}")
-                    Text("RH %${(d.rh * 100).yaz(1)} · h ${b.birim(Buyukluk.ENTALPI).yazB(d.h, 1)}")
-                    TextButton({ noktaEkle(d); balon = null }) { Text("Nokta ekle") }
+                    Text("RH ${yuzde((d.rh * 100).yaz(1))} · h ${b.birim(Buyukluk.ENTALPI).yazB(d.h, 1)}")
+                    TextButton({ noktaEkle(d); balon = null }) { Text("Nokta ekle".c()) }
                 }
             }
         }
@@ -75,7 +77,7 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
                 .padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) { Checkbox(e in a.egriler, null, Modifier.size(28.dp)) }
                 Box(Modifier.size(14.dp, 3.dp).background(Color(RENK_EGRI.getValue(e))))
-                Text(" " + e.etiket, style = MaterialTheme.typography.labelSmall)
+                Text(" ${e.etiket} (${e.birimEtiketi(a.birimler)})", style = MaterialTheme.typography.labelSmall)
             }
         }
     }

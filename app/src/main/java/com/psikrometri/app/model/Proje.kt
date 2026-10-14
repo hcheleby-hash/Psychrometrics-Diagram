@@ -20,7 +20,7 @@ data class Proje(val rakim: Double = 0.0, val noktalar: List<Nokta> = emptyList(
         for (n in noktalar) try { hava[n.ad] = Hava(coz(n.o1, n.v1, n.o2, n.v2, basinc), n.debi) } catch (e: CozumHatasi) { hatalar[n.ad] = e.message!! }
         val sonuclar = islemler.map { i ->
             runCatching {
-                val girdi = i.girdiler.map { hava[it] ?: throw CozumHatasi("$it noktası yok") }
+                val girdi = i.girdiler.map { hava[it] ?: throw CozumHatasi("Nokta yok".c() + ": $it") }
                 val r = islemHesapla(i.tur, girdi, i.param)
                 if (r.ciktilar.size < i.ciktilar.size) throw CozumHatasi("İşlem beklenen çıktıları üretmedi")
                 i.ciktilar.zip(r.ciktilar).forEach { (ad, h) -> hava[ad] = h }

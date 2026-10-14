@@ -17,14 +17,16 @@ import com.psikrometri.app.model.BirimSecimi
 import com.psikrometri.app.model.Buyukluk
 import com.psikrometri.app.model.Islem
 import com.psikrometri.app.model.RENKLER
+import com.psikrometri.app.model.c
+import com.psikrometri.app.model.yuzde
 import com.psikrometri.app.psy.*
 
 fun Kapasite.metin(b: BirimSecimi): String {
     val g = b.birim(Buyukluk.GUC); val gd = if (g.carpan > 1) 0 else 2
     return listOfNotNull(
-        toplam?.let { "Toplam ${g.yazB(it, gd)}" }, duyulur?.let { "Duyulur ${g.yazB(it, gd)}" }, gizli?.let { "Gizli ${g.yazB(it, gd)}" },
-        shf?.let { "SHF %${it.yaz(0)}" }, isitici?.let { "Isıtıcı ${g.yazB(it, gd)}" }, nemKgH?.let { "Nem ${it.yaz(2)} kg/h" },
-        cikisT?.let { "Üfleme ${b.birim(Buyukluk.SICAKLIK).yazB(it, 1)}" }, bypass?.let { "BF %${it.yaz(1)}" }).joinToString(" · ")
+        toplam?.let { "${"Toplam".c()} ${g.yazB(it, gd)}" }, duyulur?.let { "${"Duyulur".c()} ${g.yazB(it, gd)}" }, gizli?.let { "${"Gizli".c()} ${g.yazB(it, gd)}" },
+        shf?.let { "SHF ${yuzde(it.yaz(0))}" }, isitici?.let { "${"Isıtıcı".c()} ${g.yazB(it, gd)}" }, nemKgH?.let { "${"Nem".c()} ${it.yaz(2)} kg/h" },
+        cikisT?.let { "${"Üfleme".c()} ${b.birim(Buyukluk.SICAKLIK).yazB(it, 1)}" }, bypass?.let { "BF ${yuzde(it.yaz(1))}" }).joinToString(" · ")
 }
 
 @Composable
@@ -62,18 +64,18 @@ fun IslemlerSekmesi(vm: AnaVM) {
     val onizleme = islem()?.let { i -> runCatching { islemHesapla(i.tur, i.girdiler.map { vm.hesap.hava.getValue(it) }, i.param) } }
 
     Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        SecimKutusu(IslemTuru.entries, tur, { it.etiket }, { tur = it }, Modifier.fillMaxWidth(), "İşlem")
+        SecimKutusu(IslemTuru.entries, tur, { it.etiket }, { tur = it }, Modifier.fillMaxWidth(), "İşlem".c())
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             girdiler.forEachIndexed { i, g ->
-                SecimKutusu(noktaAdlari, g, { it }, { yeni -> girdiler = girdiler.toMutableList().also { l -> l[i] = yeni } }, Modifier.weight(1f), if (i == 0) "Başlangıç" else "İkinci nokta")
+                SecimKutusu(noktaAdlari, g, { it }, { yeni -> girdiler = girdiler.toMutableList().also { l -> l[i] = yeni } }, Modifier.weight(1f), if (i == 0) "Başlangıç".c() else "İkinci nokta".c())
             }
         }
         tur.parametreler.forEachIndexed { i, pr ->
             when (pr) {
                 Parametre.BUHAR -> Row { listOf("1" to "Buharlı", "0" to "Sulu").forEach { (v, e) ->
-                    Row(Modifier.clickable { param = param.toMutableList().also { it[i] = v } }) { RadioButton(param[i] == v, { param = param.toMutableList().also { it[i] = v } }); Text(e, Modifier.padding(top = 12.dp)) } } }
+                    Row(Modifier.clickable { param = param.toMutableList().also { it[i] = v } }) { RadioButton(param[i] == v, { param = param.toMutableList().also { it[i] = v } }); Text(e.c(), Modifier.padding(top = 12.dp)) } } }
                 Parametre.ARA -> Row(Modifier.clickable { param = param.toMutableList().also { it[i] = if (param[i] == "1") "0" else "1" } }) {
-                    Checkbox(param[i] == "1", { c -> param = param.toMutableList().also { it[i] = if (c) "1" else "0" } }); Text("Ara çizgileri göster", Modifier.padding(top = 12.dp)) }
+                    Checkbox(param[i] == "1", { c -> param = param.toMutableList().also { it[i] = if (c) "1" else "0" } }); Text("Ara çizgileri göster".c(), Modifier.padding(top = 12.dp)) }
                 else -> SayiAlani(param[i], { v -> param = param.toMutableList().also { it[i] = v } }, pr.etiket, if (pr == Parametre.KW) gb.etiket else pr.birim, Modifier.fillMaxWidth())
             }
         }
@@ -82,9 +84,9 @@ fun IslemlerSekmesi(vm: AnaVM) {
         }
         onizleme?.takeIf { o -> o.isFailure || o.getOrNull()?.kapasite?.metin(b)?.isNotEmpty() == true }?.let { o -> Text(o.fold({ it.kapasite.metin(b) }, { it.message ?: "" }), color = if (o.isFailure) MaterialTheme.colorScheme.error else Color.Unspecified) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button({ islem()?.let { vm.proje = vm.proje.copy(islemler = vm.proje.islemler + it) } }, enabled = duzenlenen == null && islem() != null) { Text("Ekle") }
-            Button({ islem()?.let { yeni -> vm.proje = vm.proje.copy(islemler = vm.proje.islemler.mapIndexed { k, i -> if (k == secIndex) yeni else i }) } }, enabled = duzenlenen != null && islem() != null) { Text("Güncelle") }
-            OutlinedButton({ vm.proje = vm.proje.copy(islemler = vm.proje.islemler.filterIndexed { k, _ -> k != secIndex }); secIndex = null }, enabled = duzenlenen != null) { Text("Sil") }
+            Button({ islem()?.let { vm.proje = vm.proje.copy(islemler = vm.proje.islemler + it) } }, enabled = duzenlenen == null && islem() != null) { Text("Ekle".c()) }
+            Button({ islem()?.let { yeni -> vm.proje = vm.proje.copy(islemler = vm.proje.islemler.mapIndexed { k, i -> if (k == secIndex) yeni else i }) } }, enabled = duzenlenen != null && islem() != null) { Text("Güncelle".c()) }
+            OutlinedButton({ vm.proje = vm.proje.copy(islemler = vm.proje.islemler.filterIndexed { k, _ -> k != secIndex }); secIndex = null }, enabled = duzenlenen != null) { Text("Sil".c()) }
         }
         HorizontalDivider()
         vm.proje.islemler.forEachIndexed { k, i ->

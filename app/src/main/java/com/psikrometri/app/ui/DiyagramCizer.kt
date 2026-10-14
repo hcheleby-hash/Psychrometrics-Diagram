@@ -4,7 +4,10 @@ import android.graphics.Canvas
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import com.psikrometri.app.model.BirimSecimi
+import com.psikrometri.app.model.Buyukluk
+import com.psikrometri.app.model.c
 import com.psikrometri.app.model.Hesap
 import com.psikrometri.app.model.Proje
 import com.psikrometri.app.psy.*
@@ -27,7 +30,7 @@ data class Egri(val tur: EgriTuru, val deger: Double, val noktalar: List<Pair<Do
 private fun wEgrisi(tur: EgriTuru, deger: Double, p: Double, tMin: Double, tMax: Double, wMax: Double, tBul: (Double) -> Double?): Egri {
     val nk = ArrayList<Pair<Double, Double>>()
     var w = 0.0
-    while (w <= wMax + 1e-12) {
+    while (w <= wMax + 1e-6) {
         val t = tBul(w)
         if (t != null && t in tMin..tMax && w <= doymaW(t, p)) nk += t to w
         w += wMax / 200
@@ -45,7 +48,7 @@ fun egrileriUret(p: Double, tMin: Double, tMax: Double, wMax: Double, turler: Se
     }
     if (EgriTuru.MUTLAK in turler) {
         var w = 0.005
-        while (w <= wMax + 1e-12) {
+        while (w <= wMax + 1e-6) {
             val td = kokBul(tMin, tMax, 1.0) { doymaW(it, p) - w }
             if (td != null) r += Egri(EgriTuru.MUTLAK, w, listOf(td to w, tMax to w))
             w += 0.005
@@ -83,6 +86,11 @@ val RENK_EGRI = mapOf(
     EgriTuru.KURU to 0xFFB0B0B0.toInt(), EgriTuru.MUTLAK to 0xFFB0B0B0.toInt(), EgriTuru.BAGIL to 0xFF29A3E0.toInt(),
     EgriTuru.ENTALPI to 0xFFE66A1F.toInt(), EgriTuru.YAS to 0xFF7FC8F0.toInt(), EgriTuru.HACIM to 0xFFF2C6A8.toInt(), EgriTuru.YOGUNLUK to 0xFF8BC34A.toInt())
 
+fun EgriTuru.birimEtiketi(b: BirimSecimi) = when (this) {
+    EgriTuru.KURU, EgriTuru.YAS -> b.birim(Buyukluk.SICAKLIK).etiket; EgriTuru.MUTLAK -> b.birim(Buyukluk.NEM).etiket
+    EgriTuru.BAGIL -> "%"; EgriTuru.ENTALPI -> b.birim(Buyukluk.ENTALPI).etiket; EgriTuru.HACIM -> "m³/kg"; EgriTuru.YOGUNLUK -> "kg/m³"
+}
+
 fun cizDiyagram(c: Canvas, e: Eksen, p: Double, egriler: List<Egri>, hesap: Hesap, proje: Proje, secili: String?, onizleme: Durum?, birim: BirimSecimi) {
     val ince = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1.2f }
     val yazi = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 22f }
@@ -94,13 +102,41 @@ fun cizDiyagram(c: Canvas, e: Eksen, p: Double, egriler: List<Egri>, hesap: Hesa
         c.drawPath(path, ince)
     }
     c.restore()
+    val tb = birim.birim(Buyukluk.SICAKLIK); val wb = birim.birim(Buyukluk.NEM); val hb = birim.birim(Buyukluk.ENTALPI)
+    // eğri değerleri (Daikin gibi): bağıl nem üst/sağ uçta, entalpi ve yaş term. doyma ucunda, hacim/yoğunluk altta
+    val etk = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 20f }
+    val dolu = ArrayList<RectF>()
+    // çakışmada öncelik büyük değerde: doyma (%100) etiketi hep kalır
+    for (g in egriler.sortedWith(compareBy({ it.tur.ordinal }, { -it.deger }))) {
+        if (g.noktalar.size < 2 || g.tur == EgriTuru.KURU || g.tur == EgriTuru.MUTLAK) continue
+        val s = when (g.tur) {
+            EgriTuru.ENTALPI -> hb.goster(g.deger).yaz(0); EgriTuru.YAS -> tb.goster(g.deger).yaz(0)
+            EgriTuru.HACIM, EgriTuru.YOGUNLUK -> g.deger.yaz(2); else -> g.deger.yaz(0)
+        }
+        val alt = g.tur == EgriTuru.HACIM || g.tur == EgriTuru.YOGUNLUK
+        val (t, w) = if (alt) g.noktalar.first() else g.noktalar.last()
+        val gen = etk.measureText(s)
+        val x = when (g.tur) { EgriTuru.ENTALPI -> e.x(t) - gen - 4; EgriTuru.YAS -> e.x(t) + 6; EgriTuru.BAGIL -> e.x(t) - gen / 2; else -> e.x(t) + 3 }
+        val y = if (g.tur == EgriTuru.BAGIL || g.tur == EgriTuru.YAS) e.y(w) + 20 else e.y(w) - 4
+        etk.color = if (g.tur == EgriTuru.YOGUNLUK || g.tur == EgriTuru.HACIM) 0xFF777777.toInt() else RENK_EGRI.getValue(g.tur)
+        val lx = x.coerceIn(e.sol + 2, e.sol + e.gen - gen - 2); val ly = y.coerceIn(e.ust + 20, e.ust + e.yuk - 4)
+        // sıkışık bölgede (sol alt, doyma ucu) üst üste binen etiket atlanır; önce gelen (bağıl nem, entalpi) kalır
+        val kutu = RectF(lx - 2, ly - 18, lx + gen + 2, ly + 3)
+        if (dolu.any { RectF.intersects(it, kutu) }) continue
+        dolu += kutu
+        c.drawText(s, lx, ly, etk)
+    }
     // Eksen yazıları
     yazi.color = 0xFF333333.toInt()
-    val tb = birim.birim(com.psikrometri.app.model.Buyukluk.SICAKLIK); val wb = birim.birim(com.psikrometri.app.model.Buyukluk.NEM)
     var t = ceil(e.tMin / 5) * 5
     while (t <= e.tMax) { c.drawText("%.0f".format(tb.goster(t)), e.x(t) - 12, e.ust + e.yuk + 24, yazi); t += 5 }
     var w = 0.0
-    while (w <= e.wMax + 1e-12) { c.drawText(if (wb.carpan > 1) "%.0f".format(wb.goster(w)) else "%.3f".format(w), e.sol + e.gen + 6, e.y(w) + 8, yazi); w += 0.005 }
+    while (w <= e.wMax + 1e-6) { c.drawText(if (wb.carpan > 1) "%.0f".format(wb.goster(w)) else w.yaz(3), e.sol + e.gen + 6, e.y(w) + 8, yazi); w += 0.005 }
+    yazi.isFakeBoldText = true
+    c.drawText("${"Kuru termometre".c()} (${tb.etiket})", e.sol, e.ust + e.yuk + 52, yazi)
+    val sag = "${"Mutlak nem".c()} (${wb.etiket})"
+    c.drawText(sag, e.sol + e.gen + 80 - yazi.measureText(sag), e.ust - 18, yazi)
+    yazi.isFakeBoldText = false
     // İşlem çizgileri
     val cizgi = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 4f }
     proje.islemler.forEachIndexed { i, isl ->

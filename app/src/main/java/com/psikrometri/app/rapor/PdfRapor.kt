@@ -6,6 +6,7 @@ import android.graphics.pdf.PdfDocument
 import com.psikrometri.app.model.Buyukluk
 import com.psikrometri.app.model.Hesap
 import com.psikrometri.app.model.Proje
+import com.psikrometri.app.model.c
 import com.psikrometri.app.ui.*
 import java.io.OutputStream
 
@@ -21,10 +22,10 @@ fun pdfYaz(cikti: OutputStream, proje: Proje, hesap: Hesap, egriler: List<Egri>,
     fun yeniSayfa() { sayfa = pdf.startPage(PdfDocument.PageInfo.Builder(595, 842, no++).create()); y = 40f }
     fun satir(s: String, p: Paint = yazi) { if (y > 800) { pdf.finishPage(sayfa); yeniSayfa() }; sayfa.canvas.drawText(s, 40f, y, p); y += 15f }
     yeniSayfa()
-    satir("Psikrometri raporu — rakım ${proje.rakim.yaz(0)} m, basınç ${(proje.basinc / 1000).yaz(3)} kPa", kalin)
+    satir("${"Psikrometri raporu".c()} — ${"rakım".c()} ${proje.rakim.yaz(0)} m, ${"basınç".c()} ${(proje.basinc / 1000).yaz(3)} kPa", kalin)
     val b = ayarlar.birimler; val tb = b.birim(Buyukluk.SICAKLIK); val nb = b.birim(Buyukluk.NEM); val hb = b.birim(Buyukluk.ENTALPI); val db = b.birim(Buyukluk.DEBI)
-    val sutunlar = listOf("Nokta" to 6, "t ${tb.etiket}" to 6, "twb ${tb.etiket}" to 7, "td ${tb.etiket}" to 6, "RH %" to 6, "W ${nb.etiket}" to 9,
-        "h ${hb.etiket}" to 8, "ρ kg/m³" to 7, "v m³/kg" to 7, "debi ${db.etiket}" to 8).map { (s, c) -> s to maxOf(c, s.length) }
+    val sutunlar = listOf("Nokta".c() to 6, "t ${tb.etiket}" to 6, "twb ${tb.etiket}" to 7, "td ${tb.etiket}" to 6, "RH %" to 6, "W ${nb.etiket}" to 9,
+        "h ${hb.etiket}" to 8, "ρ kg/m³" to 7, "v m³/kg" to 7, "${"debi".c()} ${db.etiket}" to 8).map { (s, c) -> s to maxOf(c, s.length) }
     fun hizala(v: List<String>) = v.zip(sutunlar).mapIndexed { i, (s, c) -> if (i == 0) s.padEnd(c.second) else s.padStart(c.second) }.joinToString(" ")
     satir(hizala(sutunlar.map { it.first }), kalin)
     for ((ad, hv) in hesap.hava) {
@@ -33,10 +34,10 @@ fun pdfYaz(cikti: OutputStream, proje: Proje, hesap: Hesap, egriler: List<Egri>,
             hb.goster(d.h).yaz(1), d.rho.yaz(3), d.v.yaz(3), db.goster(hv.debi).yaz(1))))
     }
     fun sar(s: String) { var k = s; var ek = ""; while (k.isNotEmpty()) { val n = yazi.breakText(ek + k, true, 515f, null) - ek.length; satir(ek + k.take(n.coerceAtLeast(1))); k = k.drop(n.coerceAtLeast(1)).trimStart(); ek = "    " } }
-    y += 10f; satir("İşlemler", kalin)
+    y += 10f; satir("İşlemler".c(), kalin)
     proje.islemler.forEachIndexed { i, isl ->
         sar("${isl.tur.etiket}: ${(isl.girdiler + isl.ciktilar).joinToString(", ")}")
-        hesap.sonuclar[i].fold({ sar("    " + it.kapasite.metin(b)) }, { sar("    Hata: ${it.message}") })
+        hesap.sonuclar[i].fold({ sar("    " + it.kapasite.metin(b)) }, { sar("    ${"Hata".c()}: ${it.message}") })
     }
     pdf.finishPage(sayfa)
     pdf.writeTo(cikti); pdf.close()
