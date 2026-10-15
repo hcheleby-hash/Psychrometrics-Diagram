@@ -22,7 +22,7 @@ import com.psikrometri.app.psy.Durum
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnaEkran(vm: AnaVM = viewModel()) {
-    var sekme by rememberSaveable { mutableIntStateOf(0) }
+    var sekme by rememberSaveable { mutableIntStateOf(-1) }
     var noktaTaslak by remember { mutableStateOf<Durum?>(null) }
     var rakimAcik by remember { mutableStateOf(false) }
     var ayarAcik by remember { mutableStateOf(false) }
@@ -43,17 +43,17 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
                 DropdownMenuItem({ Text("Ayarlar".c()) }, { ayarAcik = true; menu = false })
             }
         }
-        // Daikin gibi açılır bölümler: başlığa basınca altında açılır, yeniden basınca kapanır; aynı anda biri açık
+        // Noktalar hep açık; İşlemler ve Veri Daikin gibi açılır bölüm: başlığa basınca açılır, yeniden basınca kapanır; aynı anda biri açık
         val sekmeler: @Composable ColumnScope.() -> Unit = {
             listOf("Noktalar", "İşlemler", "Veri").forEachIndexed { i, s ->
                 Surface(color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth().padding(top = 2.dp)
-                    .clickable { sekme = if (sekme == i) -1 else i }) {
+                    .then(if (i > 0) Modifier.clickable { sekme = if (sekme == i) -1 else i } else Modifier)) {
                     Row(Modifier.padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(if (sekme == i) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown, null)
-                        Text("  " + s.c(), style = MaterialTheme.typography.titleSmall)
+                        if (i > 0) Icon(if (sekme == i) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown, null)
+                        Text((if (i > 0) "  " else "") + s.c(), style = MaterialTheme.typography.titleSmall)
                     }
                 }
-                if (sekme == i) Box(Modifier.weight(1f).fillMaxWidth()) {
+                if (i == 0 || sekme == i) Box(Modifier.weight(1f).fillMaxWidth()) {
                     when (i) {
                         0 -> NoktalarSekmesi(vm, noktaTaslak) { noktaTaslak = null }
                         1 -> IslemlerSekmesi(vm)
@@ -66,16 +66,15 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
             if (!yatay) TopAppBar(title = { Text("Psikrometri".c()) }, actions = eylemler)
         }) { ic ->
             if (yatay) Row(Modifier.padding(ic).fillMaxSize()) {
-                Diyagram(vm, Modifier.weight(0.55f).fillMaxHeight()) { noktaTaslak = it; sekme = 0 }
+                Diyagram(vm, Modifier.weight(0.55f).fillMaxHeight()) { noktaTaslak = it }
                 Column(Modifier.weight(0.45f).fillMaxHeight()) {
                     Row(Modifier.fillMaxWidth(), Arrangement.End, Alignment.CenterVertically, content = eylemler)
                     sekmeler()
                 }
             }
             else Column(Modifier.padding(ic).fillMaxSize()) {
-                // hepsi kapalıyken bölüm başlıkları kadar yer kaplar, grafik büyür
-                Column((if (sekme >= 0) Modifier.weight(0.55f) else Modifier).fillMaxWidth(), content = sekmeler)
-                Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
+                Column(Modifier.weight(0.55f).fillMaxWidth(), content = sekmeler)
+                Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it }
             }
         }
         if (rakimAcik) RakimDiyalog(vm) { rakimAcik = false }
