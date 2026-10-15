@@ -41,13 +41,15 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     fun nokta() = Nokta(ad.trim(), o1, si1!!, o2, si2!!, debiSi!!, duzenlenen?.renk ?: com.psikrometri.app.model.MAVI)
 
     Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        OutlinedTextField(ad, { ad = it }, label = { Text("Nokta adı".c()) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            OutlinedTextField(ad, { ad = it }, label = { Text("Nokta adı".c()) }, singleLine = true, modifier = Modifier.weight(1.2f))
+            SayiAlani(debi, { debi = it }, "Debi".c(), b.birim(Buyukluk.DEBI).etiket, Modifier.weight(1f))
+        }
         for ((o, setO, v, setV) in listOf(Quad(o1, { x: Ozellik -> v1 = yazO(x, sonuc?.getOrNull() ?: ref); o1 = x }, v1, { x: String -> v1 = x }), Quad(o2, { x: Ozellik -> v2 = yazO(x, sonuc?.getOrNull() ?: ref); o2 = x }, v2, { x: String -> v2 = x })))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 SecimKutusu(Ozellik.entries, o, { it.etiket }, setO, Modifier.weight(1.2f))
                 SayiAlani(v, setV, "Değer".c(), b.ozellikBirimi(o).etiket, Modifier.weight(1f))
             }
-        SayiAlani(debi, { debi = it }, "Debi".c(), b.birim(Buyukluk.DEBI).etiket, Modifier.fillMaxWidth())
         hata?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button({ vm.proje = vm.proje.copy(noktalar = vm.proje.noktalar + nokta()); vm.secili = null }, enabled = gecerli && duzenlenen == null) { Text("Ekle".c()) }
