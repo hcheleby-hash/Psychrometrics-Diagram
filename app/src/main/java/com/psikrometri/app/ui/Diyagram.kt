@@ -69,15 +69,21 @@ fun Diyagram(vm: AnaVM, modifier: Modifier, noktaEkle: (Durum) -> Unit) {
             }
         }
     }
-    // renk açıklaması + aç/kapat (ayarlardaki eğri seçimiyle aynı)
-    FlowRow(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
-        val a = vm.ayarlar
-        EgriTuru.entries.forEach { e ->
-            Row(Modifier.toggleable(e in a.egriler) { c -> vm.ayarDegistir(a.copy(egriler = if (c) a.egriler + e else a.egriler - e)) }
-                .padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) { Checkbox(e in a.egriler, null, Modifier.size(28.dp)) }
-                Box(Modifier.size(14.dp, 3.dp).background(Color(RENK_EGRI.getValue(e))))
-                Text(" ${e.etiket} (${e.birimEtiketi(a.birimler)})", style = MaterialTheme.typography.labelSmall)
+    // renk açıklaması + aç/kapat (ayarlardaki eğri seçimiyle aynı), iki sütunlu düzenli tablo
+    val a = vm.ayarlar
+    Column(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        EgriTuru.entries.chunked(2).forEach { satir ->
+            Row(Modifier.fillMaxWidth()) {
+                satir.forEach { e ->
+                    Row(Modifier.weight(1f).toggleable(e in a.egriler) { c -> vm.ayarDegistir(a.copy(egriler = if (c) a.egriler + e else a.egriler - e)) },
+                        verticalAlignment = Alignment.CenterVertically) {
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) { Checkbox(e in a.egriler, null, Modifier.size(28.dp)) }
+                        Box(Modifier.size(14.dp, 3.dp).background(Color(RENK_EGRI.getValue(e))))
+                        Text(" ${e.etiket} (${e.birimEtiketi(a.birimler)})", style = MaterialTheme.typography.labelSmall, maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                    }
+                }
+                if (satir.size == 1) Spacer(Modifier.weight(1f))
             }
         }
     }

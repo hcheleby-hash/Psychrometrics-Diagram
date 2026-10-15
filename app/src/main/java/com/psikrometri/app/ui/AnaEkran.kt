@@ -3,8 +3,11 @@ package com.psikrometri.app.ui
 import android.content.res.Configuration
 import com.psikrometri.app.model.RAKIM_ARALIK
 import com.psikrometri.app.model.c
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,13 +43,22 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
                 DropdownMenuItem({ Text("Ayarlar".c()) }, { ayarAcik = true; menu = false })
             }
         }
+        // Daikin gibi açılır bölümler: başlığa basınca altında açılır, yeniden basınca kapanır; aynı anda biri açık
         val sekmeler: @Composable ColumnScope.() -> Unit = {
-            TabRow(sekme) { listOf("Noktalar", "İşlemler", "Veri").map { it.c() }.forEachIndexed { i, s -> Tab(sekme == i, { sekme = i }, text = { Text(s) }) } }
-            Box(Modifier.weight(1f).fillMaxWidth()) {
-                when (sekme) {
-                    0 -> NoktalarSekmesi(vm, noktaTaslak) { noktaTaslak = null }
-                    1 -> IslemlerSekmesi(vm)
-                    else -> VeriSekmesi(vm)
+            listOf("Noktalar", "İşlemler", "Veri").forEachIndexed { i, s ->
+                Surface(color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth().padding(top = 2.dp)
+                    .clickable { sekme = if (sekme == i) -1 else i }) {
+                    Row(Modifier.padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(if (sekme == i) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown, null)
+                        Text("  " + s.c(), style = MaterialTheme.typography.titleSmall)
+                    }
+                }
+                if (sekme == i) Box(Modifier.weight(1f).fillMaxWidth()) {
+                    when (i) {
+                        0 -> NoktalarSekmesi(vm, noktaTaslak) { noktaTaslak = null }
+                        1 -> IslemlerSekmesi(vm)
+                        else -> VeriSekmesi(vm)
+                    }
                 }
             }
         }
@@ -61,7 +73,8 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
                 }
             }
             else Column(Modifier.padding(ic).fillMaxSize()) {
-                Column(Modifier.weight(0.55f).fillMaxWidth(), content = sekmeler)
+                // hepsi kapalıyken bölüm başlıkları kadar yer kaplar, grafik büyür
+                Column((if (sekme >= 0) Modifier.weight(0.55f) else Modifier).fillMaxWidth(), content = sekmeler)
                 Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
             }
         }
