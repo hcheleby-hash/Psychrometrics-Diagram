@@ -42,11 +42,7 @@ internal val CEVIRI: Map<String, Array<String>> = mapOf(
     "Raporu paylaş" to arrayOf("Share report", "Compartir informe", "Partager le rapport", "Bericht teilen"),
     "Rapor oluşturulamadı" to arrayOf("Could not create report", "No se pudo crear el informe", "Impossible de créer le rapport", "Bericht konnte nicht erstellt werden"),
     "Geçerli aralık" to arrayOf("Valid range", "Rango válido", "Plage valide", "Gültiger Bereich"),
-    "Diyagramda ya da Noktalar sekmesinde bir nokta seçin." to arrayOf(
-        "Select a point on the chart or in the Points tab.",
-        "Seleccione un punto en el diagrama o en la pestaña Puntos.",
-        "Sélectionnez un point sur le diagramme ou dans l'onglet Points.",
-        "Wählen Sie einen Punkt im Diagramm oder im Reiter Punkte."),
+    "Lütfen bir nokta ekleyin." to arrayOf("Please add a point.", "Añada un punto.", "Veuillez ajouter un point.", "Bitte fügen Sie einen Punkt hinzu."),
 
     // özellikler ve büyüklükler
     "Kuru termometre" to arrayOf("Dry bulb", "Bulbo seco", "Température sèche", "Trockentemperatur"),
@@ -78,6 +74,9 @@ internal val CEVIRI: Map<String, Array<String>> = mapOf(
 
     // işlemler
     "İşlem" to arrayOf("Process", "Proceso", "Processus", "Prozess"),
+    "Giriş" to arrayOf("Input", "Entrada", "Entrée", "Eingang"),
+    "Çıkış" to arrayOf("Output", "Salida", "Sortie", "Ausgang"),
+    "Sonuç" to arrayOf("Result", "Resultado", "Résultat", "Ergebnis"),
     "Başlangıç" to arrayOf("Start", "Inicio", "Départ", "Start"),
     "İkinci nokta" to arrayOf("Second point", "Segundo punto", "Deuxième point", "Zweiter Punkt"),
     "Buharlı" to arrayOf("Steam", "Vapor", "Vapeur", "Dampf"),

@@ -4,7 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.psikrometri.app.model.Buyukluk
@@ -13,11 +17,13 @@ import com.psikrometri.app.model.yuzde
 
 @Composable
 fun VeriSekmesi(vm: AnaVM) {
-    val ad = vm.secili
-    val h = ad?.let { vm.hesap.hava[it] }
+    val adlar = vm.hesap.hava.keys.toList()
+    // seçili yoksa (ya da silindiyse) ilk nokta gösterilir
+    val ad = vm.secili?.takeIf { it in adlar } ?: adlar.firstOrNull()
     val b = vm.ayarlar.birimler
     Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp)) {
-        if (h == null) { Text("Diyagramda ya da Noktalar sekmesinde bir nokta seçin.".c()); return@Column }
+        if (ad == null) { Text("Lütfen bir nokta ekleyin.".c()); return@Column }
+        val h = vm.hesap.hava.getValue(ad)
         val d = h.d
         val tb = b.birim(Buyukluk.SICAKLIK); val nb = b.birim(Buyukluk.NEM); val hb = b.birim(Buyukluk.ENTALPI)
         val satirlar = listOf(
@@ -28,7 +34,14 @@ fun VeriSekmesi(vm: AnaVM) {
             "Yoğunluk" to "${d.rho.yaz(3)} kg/m³", "Özgül hacim" to "${d.v.yaz(3)} m³/kg",
             "Basınç" to "${b.birim(Buyukluk.BASINC).goster(d.p).yaz(1)} ${b.birim(Buyukluk.BASINC).etiket}",
             "Debi" to "${b.birim(Buyukluk.DEBI).goster(h.debi).yaz(1)} ${b.birim(Buyukluk.DEBI).etiket}")
-        Text(ad!!, style = MaterialTheme.typography.titleMedium)
+        if (adlar.size == 1) Text(ad, style = MaterialTheme.typography.titleMedium)
+        else Box {
+            var acik by remember { mutableStateOf(false) }
+            Row(Modifier.clickable { acik = true }, verticalAlignment = Alignment.CenterVertically) {
+                Text(ad, style = MaterialTheme.typography.titleMedium); Icon(Icons.Default.ArrowDropDown, "Nokta".c())
+            }
+            DropdownMenu(acik, { acik = false }) { adlar.forEach { s -> DropdownMenuItem({ Text(s) }, { vm.secili = s; acik = false }) } }
+        }
         for ((k, v) in satirlar) Row(Modifier.fillMaxWidth()) { Text(k.c(), Modifier.weight(1f)); Text(v) }
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
         vm.proje.islemler.forEachIndexed { i, isl ->
