@@ -1,5 +1,6 @@
 package com.psikrometri.app.ui
 
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import com.psikrometri.app.model.RAKIM_ARALIK
 import com.psikrometri.app.model.c
@@ -15,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.psikrometri.app.psy.Durum
@@ -30,6 +32,9 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
     fun yeni() { vm.proje = com.psikrometri.app.model.Proje(); vm.secili = null; vm.onizleme = null }
     val dosya = dosyaIslemleri(vm)
     val yatay = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    // yatay kullanım ayarlardan açılır; kapalıyken (varsayılan) ekran dikeyde kilitli
+    val etkinlik = LocalContext.current as android.app.Activity
+    LaunchedEffect(vm.ayarlar.yatay) { etkinlik.requestedOrientation = if (vm.ayarlar.yatay) ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
     MaterialTheme { key(vm.ayarlar.dil) {
         val eylemler: @Composable RowScope.() -> Unit = {
             AssistChip({ rakimAcik = true }, label = { Text("${vm.proje.rakim.yaz(0)} m · ${(vm.proje.basinc / 1000).yaz(2)} kPa") })

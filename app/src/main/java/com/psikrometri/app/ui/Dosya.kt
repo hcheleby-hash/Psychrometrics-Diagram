@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -63,6 +64,7 @@ fun AyarDiyalog(vm: AnaVM, kapat: () -> Unit) {
         dismissButton = { TextButton(kapat) { Text("Vazgeç".c()) } }, title = { Text("Ayarlar".c()) },
         text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             SecimKutusu(Dil.entries, a.dil, { it.ad }, { a = a.copy(dil = it) }, Modifier.fillMaxWidth(), "Dil".c())
+            Row(verticalAlignment = Alignment.CenterVertically) { Text("Yatay kullanım".c(), Modifier.weight(1f)); Switch(a.yatay, { a = a.copy(yatay = it) }) }
             for (b in Buyukluk.entries) SecimKutusu(b.secenekler.indices.toList(), a.birimler.secim[b] ?: 0, { b.secenekler[it].etiket },
                 { i ->
                     val eski = a.birimler.birim(b); val yeni = b.secenekler[i]

@@ -1,13 +1,9 @@
 package com.psikrometri.app.model
 
-import java.util.Locale
-
 enum class Dil(val ad: String) { TR("Türkçe"), EN("English"), ES("Español"), FR("Français"), DE("Deutsch") }
 
-fun cihazDili() = Dil.entries.firstOrNull { it.name.equals(Locale.getDefault().language, true) } ?: Dil.EN
-
 /** Etkin dil; AnaVM ayarlardan yazar. UI dil değişince key(dil) ile yeniden kurulur. */
-@Volatile var dil = Dil.TR
+@Volatile var dil = Dil.EN
 
 /** Türkçe metin anahtardır; çevirisi yoksa olduğu gibi döner. */
 fun String.c(): String = CEVIRI[this]?.getOrNull(dil.ordinal - 1) ?: this
@@ -42,6 +38,7 @@ internal val CEVIRI: Map<String, Array<String>> = mapOf(
     "Raporu paylaş" to arrayOf("Share report", "Compartir informe", "Partager le rapport", "Bericht teilen"),
     "Rapor oluşturulamadı" to arrayOf("Could not create report", "No se pudo crear el informe", "Impossible de créer le rapport", "Bericht konnte nicht erstellt werden"),
     "Geçerli aralık" to arrayOf("Valid range", "Rango válido", "Plage valide", "Gültiger Bereich"),
+    "Yatay kullanım" to arrayOf("Landscape mode", "Modo horizontal", "Mode paysage", "Querformat"),
     "Lütfen bir nokta ekleyin." to arrayOf("Please add a point.", "Añada un punto.", "Veuillez ajouter un point.", "Bitte fügen Sie einen Punkt hinzu."),
 
     // özellikler ve büyüklükler
