@@ -40,7 +40,7 @@ fun NoktalarSekmesi(vm: AnaVM, taslak: Durum?, taslakKullanildi: () -> Unit) {
     val gecerli = sonuc?.isSuccess == true && debiSi != null && debiSi > 0 && ad.isNotBlank() && !adCakisma
     fun nokta() = Nokta(ad.trim(), o1, si1!!, o2, si2!!, debiSi!!, duzenlenen?.renk ?: com.psikrometri.app.model.MAVI)
 
-    Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             OutlinedTextField(ad, { ad = it }, label = { Text("Nokta adı".c()) }, singleLine = true, modifier = Modifier.weight(1.2f))
             SayiAlani(debi, { debi = it }, "Debi".c(), b.birim(Buyukluk.DEBI).etiket, Modifier.weight(1f))

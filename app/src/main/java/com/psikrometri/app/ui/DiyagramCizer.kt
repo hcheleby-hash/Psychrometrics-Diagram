@@ -92,6 +92,8 @@ fun EgriTuru.birimEtiketi(b: BirimSecimi) = when (this) {
 }
 
 fun cizDiyagram(c: Canvas, e: Eksen, p: Double, egriler: List<Egri>, hesap: Hesap, proje: Proje, secili: String?, onizleme: Durum?, birim: BirimSecimi) {
+    // yatayda klavye açılınca alan neredeyse sıfıra iner; etiket yerleşimi (coerceIn) boş aralıkta çöker
+    if (e.gen < 60f || e.yuk < 60f) return
     val ince = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1.2f }
     val yazi = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 22f }
     c.save(); c.clipRect(e.sol, e.ust, e.sol + e.gen, e.ust + e.yuk)

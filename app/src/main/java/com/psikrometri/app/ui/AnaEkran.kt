@@ -65,24 +65,19 @@ fun AnaEkran(vm: AnaVM = viewModel()) {
         Scaffold(topBar = {
             if (!yatay) TopAppBar(title = { Text("Psikrometri".c()) }, actions = eylemler)
         }) { ic ->
+            // kenardan kenara düzen (MainActivity): klavye pencereyi küçültmez, ekran aynı kalır, klavye üstüne biner
             if (yatay) Row(Modifier.padding(ic).fillMaxSize()) {
-                Diyagram(vm, Modifier.weight(0.55f).fillMaxHeight()) { noktaTaslak = it; sekme = 0 }
                 Column(Modifier.weight(0.45f).fillMaxHeight()) {
                     Row(Modifier.fillMaxWidth(), Arrangement.End, Alignment.CenterVertically, content = eylemler)
                     sekmeler()
                 }
+                Diyagram(vm, Modifier.weight(0.55f).fillMaxHeight()) { noktaTaslak = it; sekme = 0 }
             }
-            else BoxWithConstraints(Modifier.padding(ic).fillMaxSize()) {
-                // klavye açılınca pencere kısalır; grafik ve tikler yerinde kalıp klavyenin arkasında kalsın diye
-                // klavyesiz (en büyük) yükseklik hatırlanır, yalnız üstteki bölümler görünen alana sığdırılır
-                val tamH = remember(LocalConfiguration.current.screenHeightDp) { mutableStateOf(0.dp) }
-                if (maxHeight > tamH.value) tamH.value = maxHeight
-                val ustH = tamH.value * 0.55f
-                Column(Modifier.fillMaxWidth().height(minOf(ustH, maxHeight)), content = sekmeler)
-                Column(Modifier.fillMaxWidth().offset(y = ustH).wrapContentHeight(Alignment.Top, unbounded = true).height(tamH.value - ustH)) {
-                    HorizontalDivider(thickness = 2.dp)
-                    Diyagram(vm, Modifier.fillMaxWidth().weight(1f)) { noktaTaslak = it; sekme = 0 }
-                }
+            else Column(Modifier.padding(ic).fillMaxSize()) {
+                // bölümler açılıp kapansa da grafik alanı sabit; ikisini çizgi ayırır
+                Column(Modifier.weight(0.55f).fillMaxWidth(), content = sekmeler)
+                HorizontalDivider(thickness = 2.dp)
+                Diyagram(vm, Modifier.fillMaxWidth().weight(0.45f)) { noktaTaslak = it; sekme = 0 }
             }
         }
         if (rakimAcik) RakimDiyalog(vm) { rakimAcik = false }

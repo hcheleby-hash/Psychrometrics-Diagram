@@ -63,7 +63,7 @@ fun IslemlerSekmesi(vm: AnaVM) {
     }
     val onizleme = islem()?.let { i -> runCatching { islemHesapla(i.tur, i.girdiler.map { vm.hesap.hava.getValue(it) }, i.param) } }
 
-    Column(Modifier.imePadding().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         SecimKutusu(IslemTuru.entries, tur, { it.etiket }, { tur = it }, Modifier.fillMaxWidth(), "İşlem".c())
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             girdiler.forEachIndexed { i, g ->
